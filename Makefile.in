@@ -14,6 +14,9 @@ all: prepare release
 obj/%.o: src/%.c
 	$(CC) $(CCFLAGS) -o $@ -c $<
 
+clean:
+	rm -rf obj bin
+
 release: $(OBJS)
 	$(CC) $(LDFLAGS) -o bin/$(EXECUTABLE) $(OBJS)
 
