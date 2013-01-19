@@ -1,0 +1,7 @@
+Makefile
+*.cache
+*.log
+*.status
+*.scan
+bin
+obj
