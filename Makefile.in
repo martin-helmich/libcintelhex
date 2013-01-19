@@ -1,7 +1,7 @@
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:src/%.c=obj/%.o)
 
-CCFLAGS ?= -O3 -Wall -Iinclude/
+CCFLAGS ?= -O3 -fPIC -Wall -Iinclude/
 LDFLAGS ?= -shared -fPIC
 
 EXECUTABLE = libcintelhex.so
