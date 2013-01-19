@@ -28,7 +28,9 @@ int main()
 		return CU_get_error();
 	}
 
-	CU_add_test(pSuite, "Test if record list can be read from string #1", test_can_read_ihex_from_string_1);
+	CU_add_test(pSuite, "Record list can be read from string #1", test_can_read_ihex_from_string_1);
+	CU_add_test(pSuite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
+	CU_add_test(pSuite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);
 	CU_basic_run_tests();
