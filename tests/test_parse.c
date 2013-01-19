@@ -28,6 +28,28 @@ void test_error_on_incorrect_checksum(void)
 	CU_ASSERT(ihex_errno() == IHEX_ERR_INCORRECT_CHECKSUM);
 }
 
+void test_checksum_is_verified_when_correct(void)
+{
+	u_int8_t data[0x10] = {0x21,0x46,0x01,0x36,0x01,0x21,0x47,0x01,0x36,0x00,0x7E,0xFE,0x09,0xD2,0x19,0x01};
+	ihex_record_t r = {
+		.ihr_length = 0x10, .ihr_type = IHEX_DATA, .ihr_address = 0x0100,
+		.ihr_data = &data, .ihr_checksum = 0x40
+	};
+	
+	CU_ASSERT(ihex_check_record(&r) == 0);
+}
+
+void test_checksum_is_not_verified_when_incorrect(void)
+{
+	u_int8_t data[0x10] = {0x21,0x46,0x01,0x36,0x01,0x21,0x47,0x01,0x36,0x00,0x7E,0xFE,0x09,0xD2,0x19,0x01};
+	ihex_record_t r = {
+		.ihr_length = 0x10, .ihr_type = IHEX_DATA, .ihr_address = 0x0100,
+		.ihr_data = &data, .ihr_checksum = 0x20
+	};
+	
+	CU_ASSERT(ihex_check_record(&r) == 1);
+}
+
 static void test_can_read_ihex_from_string(char* s)
 {
 	ihex_records_t *records = ihex_from_string(s);
