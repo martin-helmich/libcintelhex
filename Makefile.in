@@ -27,3 +27,8 @@ prepare:
 install: all
 	@INSTALL@ -C bin/*.so -t @libdir@/
 	@INSTALL@ -C include/*.h -t @includedir@/
+
+test: all
+	$(MAKE) -C tests
+	cd tests
+	tests/test
