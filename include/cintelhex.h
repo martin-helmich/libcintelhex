@@ -1,5 +1,7 @@
 #include "stdlib.h"
 
+#define IHEX_ERR_INCORRECT_CHECKSUM 0x01
+
 typedef enum { IHEX_DATA = 0x00, IHEX_END = 0x01, IHEX_ESA = 0x02,
                IHEX_SSA = 0x03, IHEX_ELA = 0x04, IHEX_SLA = 0x05 } ihex_rtype_t;
 
