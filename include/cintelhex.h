@@ -5,6 +5,7 @@
 #define IHEX_ERR_NO_EOF 0x02
 #define IHEX_ERR_PARSE_ERROR 0x03
 
+typedef unsigned int uint_t;
 typedef enum { IHEX_DATA = 0x00, IHEX_END = 0x01, IHEX_ESA = 0x02,
                IHEX_SSA = 0x03, IHEX_ELA = 0x04, IHEX_SLA = 0x05 } ihex_rtype_t;
 
@@ -24,7 +25,7 @@ typedef struct ihex_record {
 
 typedef struct ihex_records {
 	unsigned int ihrs_count;
-	struct ihex_record *ihrs_records;
+	ihex_record_t *ihrs_records;
 } ihex_records_t;
 
 /// Parse Intel HEX string from file.
@@ -42,6 +43,8 @@ int ihex_check_record(ihex_record_t *r);
 /// Return error string, or NULL if no error occurred.
 char* ihex_error();
 
-u_int8_t ihex_fromhex8(u_int8_t *input);
-u_int16_t ihex_fromhex16(u_int8_t *input);
+/// Parse 8-bit hex input
+uint8_t ihex_fromhex8(uint8_t *input);
 
+/// Parse 16-bit hex input
+uint16_t ihex_fromhex16(uint8_t *input);
