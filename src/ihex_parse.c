@@ -1,6 +1,12 @@
 #include "cintelhex.h"
+#include <stdio.h>
 
 #define IHEX_CHR_RECORDMARK 0x3A
+
+static ihex_error_t errno = 0;
+static char* error = NULL;
+
+static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
 ihex_records_t* ihex_from_file(char* filename)
 {
@@ -9,15 +15,60 @@ ihex_records_t* ihex_from_file(char* filename)
 
 ihex_records_t* ihex_from_string(char* data)
 {
-	return NULL;
+	uint_t i = 0;
+	int    r = 0, c = 0;
+	
+	errno    = 0;
+	error    = NULL;
+	
+	for (char *p = data; *p != 0x00; p ++)
+	{
+		if (*p == IHEX_CHR_RECORDMARK)
+		{
+			c ++;
+		}
+	}
+	
+	ihex_record_t  *rec   = (ihex_record_t*)  calloc(c, sizeof(ihex_record_t));
+	ihex_records_t *recls = (ihex_records_t*) malloc(sizeof(ihex_records_t));
+	
+	recls->ihrs_count   = c;
+	recls->ihrs_records = rec;
+	
+	while (*data != 0x00)
+	{
+		i ++;
+		
+		ihex_rlen_t    l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
+		
+		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, &(rec[i-1]))) != 0)
+		{
+			char *e = malloc(512);
+			sprintf(e, "Line %i: %s\n", i, error);
+			
+			errno = r;
+			error = e;
+			
+			return NULL;
+		}
+		
+		data += rec[i-1].ihr_length * 2 + 10;
+		while (*data != IHEX_CHR_RECORDMARK && *data != 0x00)
+		{
+			data ++;
+		}
+	}
+	
+	return recls;
 }
 
-int ihex_parse_single_record(u_int8_t* data, unsigned int length, ihex_record_t* record)
+static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record)
 {
-	u_int i;
+	uint_t i;
 	
 	if (data[0] != IHEX_CHR_RECORDMARK)
 	{
+		error = "Missing record mark.";
 		return IHEX_ERR_PARSE_ERROR;
 	}
 	
@@ -34,11 +85,17 @@ int ihex_parse_single_record(u_int8_t* data, unsigned int length, ihex_record_t*
 	
 	for (i = 0; i < record->ihr_length; i ++)
 	{
-		record->ihr_data[i] = ihex_fromhex8(data + 9 + i);
+		if (data[9 + i*2] == 0x0A || data[9 + i*2] == 0x0D)
+		{
+			error = "Unexpected end of line.";
+			return IHEX_ERR_PARSE_ERROR;
+		}
+		record->ihr_data[i] = ihex_fromhex8(data + 9 + i*2);
 	}
 	
 	if (ihex_check_record(record) != 0)
 	{
+		error = "Checksum validation failed.";
 		return IHEX_ERR_INCORRECT_CHECKSUM;
 	}
 	
@@ -47,8 +104,8 @@ int ihex_parse_single_record(u_int8_t* data, unsigned int length, ihex_record_t*
 
 int ihex_check_record(ihex_record_t *r)
 {
-	u_int    i;
-	u_int8_t t = 0;
+	uint_t  i;
+	uint8_t t = 0;
 	
 	t += r->ihr_length + ((r->ihr_address >> 8) & 0xFF) + (r->ihr_address & 0xFF) + r->ihr_type;
 	
@@ -64,15 +121,15 @@ int ihex_check_record(ihex_record_t *r)
 
 ihex_error_t ihex_errno()
 {
-	return -1;
+	return errno;
 }
 
 char* ihex_error()
 {
-	return NULL;
+	return error;
 }
 
-inline u_int8_t ihex_fromhex4(u_int8_t i)
+inline uint8_t ihex_fromhex4(uint8_t i)
 {
 	if      (i >= 0x61 && i <= 0x66) return i - 0x61 + 10;
 	else if (i >= 0x41 && i <= 0x46) return i - 0x41 + 10;
@@ -80,12 +137,12 @@ inline u_int8_t ihex_fromhex4(u_int8_t i)
 	else return 0;
 }
 
-u_int8_t ihex_fromhex8(u_int8_t *i)
+uint8_t ihex_fromhex8(uint8_t *i)
 {
 	return (ihex_fromhex4(i[0]) << 4) + ihex_fromhex4(i[1]);
 }
 
-u_int16_t ihex_fromhex16(u_int8_t *i)
+uint16_t ihex_fromhex16(uint8_t *i)
 {
 	return (ihex_fromhex4(i[0]) << 12) + (ihex_fromhex4(i[1]) << 8) + 
 	       (ihex_fromhex4(i[2]) << 4) + ihex_fromhex4(i[0]);
