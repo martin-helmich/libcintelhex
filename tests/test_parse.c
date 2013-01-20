@@ -2,7 +2,35 @@
 
 static void test_can_read_ihex_from_string(char* s);
 
+int  init_parsingsuite(void);
+int  clean_parsingsuite(void);
+void add_tests_parsingsuite(CU_pSuite suite);
+
 void test_can_read_ihex_from_string_1(void);
+void test_no_error_on_correct_checksum(void);
+void test_error_on_incorrect_checksum(void);
+void test_checksum_is_verified_when_correct(void);
+void test_checksum_is_not_verified_when_incorrect(void);
+
+int init_parsingsuite(void)
+{
+	return 0;
+}
+
+int clean_parsingsuite(void)
+{
+	return 0;
+}
+
+void add_tests_parsingsuite(CU_pSuite suite)
+{
+	CU_add_test(suite, "Record list can be read from string #1", test_can_read_ihex_from_string_1);
+	CU_add_test(suite, "Correct checksum can be verified", test_checksum_is_verified_when_correct);
+	CU_add_test(suite, "Incorrect checksum can not be verified", test_checksum_is_not_verified_when_incorrect);
+	CU_add_test(suite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
+	CU_add_test(suite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
+
+}
 
 void test_can_read_ihex_from_string_1(void)
 {
