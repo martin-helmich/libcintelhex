@@ -11,6 +11,7 @@
 #define IHEX_ERR_NO_INPUT 0x05
 
 typedef unsigned int uint_t;
+typedef unsigned long ulong_t;
 typedef enum { IHEX_DATA = 0x00, IHEX_EOF = 0x01, IHEX_ESA = 0x02,
                IHEX_SSA = 0x03, IHEX_ELA = 0x04, IHEX_SLA = 0x05 } ihex_rtype_t;
 
