@@ -1,16 +1,55 @@
 #define IHEX_PARSE_C
 
 #include "cintelhex.h"
+
 #include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 #define IHEX_CHR_RECORDMARK 0x3A
-
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
 ihex_recordset_t* ihex_rs_from_file(char* filename)
 {
-	return NULL;
+	struct stat s;
+	int         fd;
+	ulong_t     l;
+	char*       c;
+	
+	ihex_recordset_t* r;
+	
+	fd = open(filename, O_RDONLY);
+	if (fd == 0)
+	{
+		ihex_last_error = "Input file does not exist.";
+		ihex_last_errno = IHEX_ERR_NO_INPUT;
+		
+		return NULL;
+	}
+	
+	if (fstat (fd, &s) != 0)
+	{
+		close(fd);
+		
+		ihex_last_error = "Could not stat input file.";
+		ihex_last_errno = IHEX_ERR_NO_INPUT;
+		
+		return NULL;
+	}
+	
+	l = s.st_size;
+	c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0);
+	
+	r = ihex_rs_from_string(c);
+	
+	munmap((void*) c, l);
+	close(fd);
+	
+	return r;
 }
 
 ihex_recordset_t* ihex_rs_from_string(char* data)

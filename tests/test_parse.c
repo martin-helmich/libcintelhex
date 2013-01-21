@@ -1,12 +1,13 @@
 #include "cintelhex.h"
 
-static void test_can_read_ihex_from_string(char* s);
+static void test_can_read_ihex_rs_from_string(char* s);
 
 int  init_parsingsuite(void);
 int  clean_parsingsuite(void);
 void add_tests_parsingsuite(CU_pSuite suite);
 
-void test_can_read_ihex_from_string_1(void);
+void test_can_read_ihex_rs_from_file_1();
+void test_can_read_ihex_rs_from_string_1(void);
 void test_no_error_on_correct_checksum(void);
 void test_error_on_incorrect_checksum(void);
 void test_checksum_is_verified_when_correct(void);
@@ -26,20 +27,33 @@ int clean_parsingsuite(void)
 
 void add_tests_parsingsuite(CU_pSuite suite)
 {
-	CU_add_test(suite, "Record list can be read from string #1", test_can_read_ihex_from_string_1);
+	CU_add_test(suite, "Record list can be read from file #1", test_can_read_ihex_rs_from_file_1);
+	CU_add_test(suite, "Record list can be read from string #1", test_can_read_ihex_rs_from_string_1);
 	CU_add_test(suite, "Correct checksum can be verified", test_checksum_is_verified_when_correct);
 	CU_add_test(suite, "Incorrect checksum can not be verified", test_checksum_is_not_verified_when_incorrect);
 	CU_add_test(suite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
 	CU_add_test(suite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
 	CU_add_test(suite, "Error is set when EOF record is missing", test_error_on_missing_eof);
 	CU_add_test(suite, "Error is set on incorrect record length", test_error_on_incorrect_record_length);
-
 }
 
-void test_can_read_ihex_from_string_1(void)
+void test_can_read_ihex_rs_from_file_1(void)
+{
+	ihex_recordset_t* r = ihex_rs_from_file("tests/res/hex1.dat");
+	
+	CU_ASSERT_PTR_NOT_NULL_FATAL(r);
+	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 6);
+
+	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_length, 0x10);
+	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_data[0], 0x21);
+	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_type, IHEX_DATA);
+	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_address, 0x0100);
+}
+
+void test_can_read_ihex_rs_from_string_1(void)
 {
 	char* s = ":10010000214601360121470136007EFE09D2190140\r\n:00000001FF\r\n";
-	test_can_read_ihex_from_string(s);
+	test_can_read_ihex_rs_from_string(s);
 }
 
 void test_no_error_on_correct_checksum(void)
@@ -100,7 +114,7 @@ void test_checksum_is_not_verified_when_incorrect(void)
 	CU_ASSERT(ihex_check_record(&r) == 1);
 }
 
-static void test_can_read_ihex_from_string(char* s)
+static void test_can_read_ihex_rs_from_string(char* s)
 {
 	ihex_recordset_t *records = ihex_rs_from_string(s);
 
