@@ -34,6 +34,14 @@ typedef struct ihex_recordset {
 	ihex_record_t *ihrs_records;
 } ihex_recordset_t;
 
+#ifdef IHEX_PARSE_C
+static ihex_error_t ihex_last_errno = 0;
+static char*        ihex_last_error = NULL;
+#else
+extern ihex_error_t ihex_last_errno;
+extern char*        ihex_last_error;
+#endif
+
 /// Parse Intel HEX string from file.
 ihex_recordset_t* ihex_rs_from_file(char* filename);
 

@@ -1,10 +1,10 @@
+#define IHEX_PARSE_C
+
 #include "cintelhex.h"
 #include <stdio.h>
 
 #define IHEX_CHR_RECORDMARK 0x3A
 
-static ihex_error_t errno = 0;
-static char* error = NULL;
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
@@ -18,8 +18,8 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	uint_t i = 0;
 	int    r = 0, c = 0;
 	
-	errno    = 0;
-	error    = NULL;
+	ihex_last_errno    = 0;
+	ihex_last_error    = NULL;
 	
 	for (char *p = data; *p != 0x00; p ++)
 	{
@@ -44,10 +44,10 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, &(rec[i-1]))) != 0)
 		{
 			char *e = malloc(512);
-			sprintf(e, "Line %i: %s\n", i, error);
+			sprintf(e, "Line %i: %s\n", i, ihex_last_error);
 			
-			errno = r;
-			error = e;
+			ihex_last_errno = r;
+			ihex_last_error = e;
 			
 			return NULL;
 		}
@@ -68,7 +68,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	
 	if (data[0] != IHEX_CHR_RECORDMARK)
 	{
-		error = "Missing record mark.";
+		ihex_last_error = "Missing record mark.";
 		return IHEX_ERR_PARSE_ERROR;
 	}
 	
@@ -87,15 +87,15 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	{
 		if (data[9 + i*2] == 0x0A || data[9 + i*2] == 0x0D)
 		{
-			error = "Unexpected end of line.";
-			return IHEX_ERR_PARSE_ERROR;
+			ihex_last_error = "Unexpected end of line.";
+			return IHEX_ERR_WRONG_RECORD_LENGTH;
 		}
 		record->ihr_data[i] = ihex_fromhex8(data + 9 + i*2);
 	}
 	
 	if (ihex_check_record(record) != 0)
 	{
-		error = "Checksum validation failed.";
+		ihex_last_error = "Checksum validation failed.";
 		return IHEX_ERR_INCORRECT_CHECKSUM;
 	}
 	
@@ -121,12 +121,12 @@ int ihex_check_record(ihex_record_t *r)
 
 ihex_error_t ihex_errno()
 {
-	return errno;
+	return ihex_last_errno;
 }
 
 char* ihex_error()
 {
-	return error;
+	return ihex_last_error;
 }
 
 inline uint8_t ihex_fromhex4(uint8_t i)
