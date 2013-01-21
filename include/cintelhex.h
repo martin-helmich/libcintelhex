@@ -4,6 +4,8 @@
 #define IHEX_ERR_INCORRECT_CHECKSUM 0x01
 #define IHEX_ERR_NO_EOF 0x02
 #define IHEX_ERR_PARSE_ERROR 0x03
+#define IHEX_ERR_WRONG_RECORD_LENGTH 0x04
+#define IHEX_ERR_NO_INPUT 0x05
 
 typedef unsigned int uint_t;
 typedef enum { IHEX_DATA = 0x00, IHEX_END = 0x01, IHEX_ESA = 0x02,
