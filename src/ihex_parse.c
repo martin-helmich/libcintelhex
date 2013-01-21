@@ -59,6 +59,12 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 		}
 	}
 	
+	if (recls->ihrs_records[recls->ihrs_count - 1].ihr_type != IHEX_EOF)
+	{
+		ihex_last_errno = IHEX_ERR_NO_EOF;
+		ihex_last_error = "Missing EOF record.\n";
+	}
+	
 	return recls;
 }
 

@@ -11,6 +11,7 @@ void test_no_error_on_correct_checksum(void);
 void test_error_on_incorrect_checksum(void);
 void test_checksum_is_verified_when_correct(void);
 void test_checksum_is_not_verified_when_incorrect(void);
+void test_error_on_missing_eof(void);
 
 int init_parsingsuite(void)
 {
@@ -29,6 +30,7 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "Incorrect checksum can not be verified", test_checksum_is_not_verified_when_incorrect);
 	CU_add_test(suite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
 	CU_add_test(suite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
+	CU_add_test(suite, "Error is set when EOF record is missing", test_error_on_missing_eof);
 
 }
 
@@ -45,6 +47,15 @@ void test_no_error_on_correct_checksum(void)
 
 	CU_ASSERT(ihex_errno() == 0);
 	CU_ASSERT(ihex_error() == NULL);
+}
+
+void test_error_on_missing_eof(void)
+{
+	char* s = ":10010000214601360121470136007EFE09D2190140\r\n";
+	ihex_recordset_t *records = ihex_rs_from_string(s);
+
+	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_NO_EOF);
+	CU_ASSERT_PTR_NOT_NULL(ihex_error());
 }
 
 void test_error_on_incorrect_checksum(void)
