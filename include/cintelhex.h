@@ -1,3 +1,6 @@
+#ifndef CINTELHEX_H
+#define CINTELHEX_H
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -50,3 +53,4 @@ uint8_t ihex_fromhex8(uint8_t *input);
 
 /// Parse 16-bit hex input
 uint16_t ihex_fromhex16(uint8_t *input);
+#endif
