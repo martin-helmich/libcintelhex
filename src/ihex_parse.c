@@ -60,6 +60,7 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	ihex_last_errno    = 0;
 	ihex_last_error    = NULL;
 	
+	// Count number of record marks in input string.
 	for (char *p = data; *p != 0x00; p ++)
 	{
 		if (*p == IHEX_CHR_RECORDMARK)
@@ -68,6 +69,8 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 		}
 	}
 	
+	// Allocate memory for the record container structure and for each
+	// individual record.
 	ihex_record_t    *rec   = (ihex_record_t*)    calloc(c, sizeof(ihex_record_t));
 	ihex_recordset_t *recls = (ihex_recordset_t*) malloc(sizeof(ihex_recordset_t));
 	
@@ -78,8 +81,7 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	{
 		i ++;
 		
-		ihex_rlen_t    l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
-		
+		ihex_rlen_t l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
 		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, &(rec[i-1]))) != 0)
 		{
 			char *e = malloc(512);
@@ -111,12 +113,14 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 {
 	uint_t i;
 	
+	// Records needs to begin with record mark (usually ":")
 	if (data[0] != IHEX_CHR_RECORDMARK)
 	{
 		ihex_last_error = "Missing record mark.";
 		return IHEX_ERR_PARSE_ERROR;
 	}
 	
+	// Record layout:
 	//               1         2         3         4
 	// 0 12 3456 78 90123456789012345678901234567890 12
 	// : 10 0100 00 214601360121470136007EFE09D21901 40
@@ -161,14 +165,13 @@ int ihex_check_record(ihex_record_t *r)
 	uint_t  i;
 	uint8_t t = 0;
 	
-	t += r->ihr_length + ((r->ihr_address >> 8) & 0xFF) + (r->ihr_address & 0xFF) + r->ihr_type;
+	t += r->ihr_length + ((r->ihr_address >> 8) & 0xFF)
+		+ (r->ihr_address & 0xFF) + r->ihr_type + r->ihr_checksum;
 	
 	for (i = 0; i < r->ihr_length; i ++)
 	{
 		t += r->ihr_data[i];
 	}
-	
-	t += r->ihr_checksum;
 	
 	return ((t & 0xFF) == 0) ? 0 : 1;
 }

@@ -55,6 +55,12 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
 ihex_error_t ihex_errno();
 
 /// Checks if a record's checksum is valid.
+/** Validate the record by adding up all bytes of a record.
+ *  Including the checksum, the lower 8 bytes of the sum of all
+ *  bytes must be 0x00.
+ * 
+ *  @param r The record that is to be validated.
+ *  @return  0 if the record is correct, otherwise 1. */
 int ihex_check_record(ihex_record_t *r);
 
 /// Return error string, or NULL if no error occurred.
