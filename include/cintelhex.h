@@ -48,6 +48,9 @@ ihex_recordset_t* ihex_rs_from_file(char* filename);
 /// Parse Intel HEX string from string input.
 ihex_recordset_t* ihex_rs_from_string(char* data);
 
+/// Gets a record set's size.
+ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
+
 /// Return error code, or 0 if no error occurred.
 ihex_error_t ihex_errno();
 
