@@ -63,6 +63,15 @@ ihex_error_t ihex_errno();
  *  @return  0 if the record is correct, otherwise 1. */
 int ihex_check_record(ihex_record_t *r);
 
+/// Copy the content of a record set.
+/** This method copies the content of a record set to a certain
+ *  location in memory.
+ *  @param rs  The record set that is to be copied.
+ *  @param dst A pointer to the destination address.
+ *  @param n   The size of the allocated target area.
+ *  @return    0 on success, an error code otherwise. */
+int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n);
+
 /// Return error string, or NULL if no error occurred.
 char* ihex_error();
 
