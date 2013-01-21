@@ -12,6 +12,7 @@ void test_error_on_incorrect_checksum(void);
 void test_checksum_is_verified_when_correct(void);
 void test_checksum_is_not_verified_when_incorrect(void);
 void test_error_on_missing_eof(void);
+void test_error_on_incorrect_record_length();
 
 int init_parsingsuite(void)
 {
@@ -31,6 +32,7 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
 	CU_add_test(suite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
 	CU_add_test(suite, "Error is set when EOF record is missing", test_error_on_missing_eof);
+	CU_add_test(suite, "Error is set on incorrect record length", test_error_on_incorrect_record_length);
 
 }
 
@@ -65,6 +67,15 @@ void test_error_on_incorrect_checksum(void)
 	ihex_recordset_t *records = ihex_rs_from_string(s);
 
 	CU_ASSERT(ihex_errno() == IHEX_ERR_INCORRECT_CHECKSUM);
+}
+
+void test_error_on_incorrect_record_length(void)
+{
+	//                                                v--- Missing byte!
+	char* s = ":10010000214601360121470136007EFE09D21940\r\n:00000001FF\r\n";
+	ihex_recordset_t *records = ihex_rs_from_string(s);
+
+	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_WRONG_RECORD_LENGTH);
 }
 
 void test_checksum_is_verified_when_correct(void)

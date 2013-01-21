@@ -87,7 +87,16 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8(data + 7);
 	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8(data + 9 + record->ihr_length * 2);
 
-	record->ihr_data    = (ihex_rdata_t)  malloc(record->ihr_length);
+	record->ihr_data     = (ihex_rdata_t) malloc(record->ihr_length);
+	
+	// Records needs to end with CRLF or LF.
+	if ((data[11 + record->ihr_length*2] != 0x0D ||
+	     data[12 + record->ihr_length*2] != 0x0A) &&
+	    (data[11 + record->ihr_length*2] != 0x0A))
+	{
+		ihex_last_error = "Incorrect record length.";
+		return IHEX_ERR_WRONG_RECORD_LENGTH;
+	}
 	
 	for (i = 0; i < record->ihr_length; i ++)
 	{
