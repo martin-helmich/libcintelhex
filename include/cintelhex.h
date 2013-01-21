@@ -29,16 +29,16 @@ typedef struct ihex_record {
 	ihex_rchks_t ihr_checksum;
 } ihex_record_t;
 
-typedef struct ihex_records {
+typedef struct ihex_recordset {
 	unsigned int ihrs_count;
 	ihex_record_t *ihrs_records;
-} ihex_records_t;
+} ihex_recordset_t;
 
 /// Parse Intel HEX string from file.
-ihex_records_t* ihex_from_file(char* filename);
+ihex_recordset_t* ihex_rs_from_file(char* filename);
 
 /// Parse Intel HEX string from string input.
-ihex_records_t* ihex_from_string(char* data);
+ihex_recordset_t* ihex_rs_from_string(char* data);
 
 /// Return error code, or 0 if no error occurred.
 ihex_error_t ihex_errno();

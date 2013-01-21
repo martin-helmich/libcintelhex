@@ -8,12 +8,12 @@ static char* error = NULL;
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
-ihex_records_t* ihex_from_file(char* filename)
+ihex_recordset_t* ihex_rs_from_file(char* filename)
 {
 	return NULL;
 }
 
-ihex_records_t* ihex_from_string(char* data)
+ihex_recordset_t* ihex_rs_from_string(char* data)
 {
 	uint_t i = 0;
 	int    r = 0, c = 0;
@@ -29,8 +29,8 @@ ihex_records_t* ihex_from_string(char* data)
 		}
 	}
 	
-	ihex_record_t  *rec   = (ihex_record_t*)  calloc(c, sizeof(ihex_record_t));
-	ihex_records_t *recls = (ihex_records_t*) malloc(sizeof(ihex_records_t));
+	ihex_record_t    *rec   = (ihex_record_t*)    calloc(c, sizeof(ihex_record_t));
+	ihex_recordset_t *recls = (ihex_recordset_t*) malloc(sizeof(ihex_recordset_t));
 	
 	recls->ihrs_count   = c;
 	recls->ihrs_records = rec;
