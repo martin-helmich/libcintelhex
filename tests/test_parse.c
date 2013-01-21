@@ -22,6 +22,7 @@ int init_parsingsuite(void)
 
 int clean_parsingsuite(void)
 {
+	// ihex_error_reset();
 	return 0;
 }
 
