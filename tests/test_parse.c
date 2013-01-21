@@ -33,7 +33,7 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "Correct checksum can be verified", test_checksum_is_verified_when_correct);
 	CU_add_test(suite, "Incorrect checksum can not be verified", test_checksum_is_not_verified_when_incorrect);
 	CU_add_test(suite, "No error is set when checksum is correct", test_no_error_on_correct_checksum);
-	CU_add_test(suite, "Error number is set when checksum is incorrect", test_error_on_incorrect_checksum);
+	CU_add_test(suite, "Error is set when checksum is incorrect", test_error_on_incorrect_checksum);
 	CU_add_test(suite, "Error is set when EOF record is missing", test_error_on_missing_eof);
 	CU_add_test(suite, "Error is set on incorrect record length", test_error_on_incorrect_record_length);
 }
