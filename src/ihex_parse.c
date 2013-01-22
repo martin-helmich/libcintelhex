@@ -186,6 +186,16 @@ char* ihex_error()
 	return ihex_last_error;
 }
 
+void ihex_set_error(ihex_error_t errno, char* error)
+{
+	ihex_last_errno = errno;
+	ihex_last_error = error;
+				
+	#ifdef IHEX_DEBUG
+	printf(error);
+	#endif
+}
+
 inline uint8_t ihex_fromhex4(uint8_t i)
 {
 	if      (i >= 0x61 && i <= 0x66) return i - 0x61 + 10;
