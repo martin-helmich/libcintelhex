@@ -13,13 +13,18 @@ AC_PROG_MKDIR_P
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h])
+AC_CHECK_HEADERS([fcntl.h stdint.h stdlib.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_TYPE_UINT8_T
+AC_C_INLINE
 AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
 
 # Checks for library functions.
+AC_FUNC_MALLOC
+AC_FUNC_MMAP
+AC_CHECK_FUNCS([munmap])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
