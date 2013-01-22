@@ -19,6 +19,7 @@
 #include <CUnit/CUCurses.h>
 #include "test_parse.c"
 #include "test_record.c"
+#include "test_copy.c"
 
 int main(int argc, char* argv[])
 {
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
 	
 	DECLARE_AND_INIT_SUITE(recordsuite, "Core record model");
 	DECLARE_AND_INIT_SUITE(parsingsuite, "Input file parsing");
+	DECLARE_AND_INIT_SUITE(memcopysuite, "Memory management");
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);
 	

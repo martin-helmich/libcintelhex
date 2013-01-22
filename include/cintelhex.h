@@ -72,6 +72,8 @@ int ihex_check_record(ihex_record_t *r);
  *  @return    0 on success, an error code otherwise. */
 int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n);
 
+int ihex_mem_zero(void* dst, ulong_t n);
+
 /// Return error string, or NULL if no error occurred.
 char* ihex_error();
 
