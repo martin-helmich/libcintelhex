@@ -29,6 +29,6 @@ install: all
 	@INSTALL@ -C include/*.h -t @includedir@/
 
 test: all
-	$(MAKE) -C tests
+	$(MAKE) -C tests clean all
 	cd tests
 	tests/test
