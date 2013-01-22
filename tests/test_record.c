@@ -24,7 +24,7 @@ void test_recordset_size_is_correctly_computed()
 	                      {.ihr_length = 20, .ihr_type = IHEX_DATA,
 	                       .ihr_address = 0x0100, .ihr_data = NULL,
 	                       .ihr_checksum = 0x00}};
-	ihex_recordset_t rs = {.ihrs_count = 2, .ihrs_records = &r};
+	ihex_recordset_t rs = {.ihrs_count = 2, .ihrs_records = (ihex_record_t*) &(r)};
 	
 	CU_ASSERT_EQUAL(ihex_rs_get_size(&rs), 30);
 }
