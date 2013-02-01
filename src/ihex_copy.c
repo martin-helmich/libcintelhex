@@ -73,6 +73,8 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 				#endif
 				
 				break;
+			case IHEX_SSA:
+				break;
 			default:
 				last_error = malloc(512);
 				sprintf(last_error, "Unknown record type in record %i: 0x%02x.\n", i+1, rs->ihrs_records[i].ihr_type);
