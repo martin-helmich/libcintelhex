@@ -6,6 +6,9 @@ int  init_parsingsuite(void);
 int  clean_parsingsuite(void);
 void add_tests_parsingsuite(CU_pSuite suite);
 
+void test_can_parse_8bit_hex_1();
+void test_can_parse_8bit_hex_2();
+void test_can_parse_address_1(void);
 void test_can_read_ihex_rs_from_file_1();
 void test_can_read_ihex_rs_from_string_1(void);
 void test_no_error_on_correct_checksum(void);
@@ -28,6 +31,9 @@ int clean_parsingsuite(void)
 
 void add_tests_parsingsuite(CU_pSuite suite)
 {
+	CU_add_test(suite, "8-bit address can be parsed #1", test_can_parse_8bit_hex_1);
+	CU_add_test(suite, "8-bit address can be parsed #1", test_can_parse_8bit_hex_2);
+	CU_add_test(suite, "16-bit address can be parsed #1", test_can_parse_address_1);
 	CU_add_test(suite, "Record list can be read from file #1", test_can_read_ihex_rs_from_file_1);
 	CU_add_test(suite, "Record list can be read from string #1", test_can_read_ihex_rs_from_string_1);
 	CU_add_test(suite, "Correct checksum can be verified", test_checksum_is_verified_when_correct);
@@ -36,6 +42,21 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "Error is set when checksum is incorrect", test_error_on_incorrect_checksum);
 	CU_add_test(suite, "Error is set when EOF record is missing", test_error_on_missing_eof);
 	CU_add_test(suite, "Error is set on incorrect record length", test_error_on_incorrect_record_length);
+}
+
+void test_can_parse_8bit_hex_1()
+{
+	CU_ASSERT_EQUAL(ihex_fromhex8("10"), 0x10);
+}
+
+void test_can_parse_8bit_hex_2()
+{
+	CU_ASSERT_EQUAL(ihex_fromhex8("00"), 0x00);
+}
+
+void test_can_parse_address_1(void)
+{
+	CU_ASSERT_EQUAL(ihex_fromhex16("1000"), 0x1000);
 }
 
 void test_can_read_ihex_rs_from_file_1(void)

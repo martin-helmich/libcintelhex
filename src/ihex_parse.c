@@ -212,5 +212,5 @@ uint8_t ihex_fromhex8(uint8_t *i)
 uint16_t ihex_fromhex16(uint8_t *i)
 {
 	return (ihex_fromhex4(i[0]) << 12) + (ihex_fromhex4(i[1]) << 8) + 
-	       (ihex_fromhex4(i[2]) << 4) + ihex_fromhex4(i[0]);
+	       (ihex_fromhex4(i[2]) << 4) + ihex_fromhex4(i[3]);
 }
