@@ -1,5 +1,11 @@
 #include "cintelhex.h"
 
+#define IHEX_ASSERT_REC_EQUAL(rec, len, addr, type, dat0) \
+	CU_ASSERT_EQUAL((rec)->ihr_length, len); \
+	CU_ASSERT_EQUAL((rec)->ihr_address, addr); \
+	CU_ASSERT_EQUAL((rec)->ihr_type, type); \
+	CU_ASSERT_EQUAL((rec)->ihr_data[0], dat0);
+
 static void test_can_read_ihex_rs_from_string(char* s);
 
 int  init_parsingsuite(void);
@@ -66,10 +72,7 @@ void test_can_read_ihex_rs_from_file_1(void)
 	CU_ASSERT_PTR_NOT_NULL_FATAL(r);
 	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 6);
 
-	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_length, 0x10);
-	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_data[0], 0x21);
-	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_type, IHEX_DATA);
-	CU_ASSERT_EQUAL(r->ihrs_records[1].ihr_address, 0x0100);
+	IHEX_ASSERT_REC_EQUAL(&(r->ihrs_records[1]), 0x10, 0x0100, IHEX_DATA, 0x21);
 }
 
 void test_can_read_ihex_rs_from_string_1(void)
