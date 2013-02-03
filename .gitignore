@@ -3,5 +3,6 @@ Makefile
 *.log
 *.status
 *.scan
+*.o
 bin
 obj
