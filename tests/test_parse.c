@@ -16,6 +16,7 @@ void test_can_parse_8bit_hex_1();
 void test_can_parse_8bit_hex_2();
 void test_can_parse_address_1(void);
 void test_can_read_ihex_rs_from_file_1();
+void test_can_read_ihex_rs_from_file_2();
 void test_can_read_ihex_rs_from_string_1(void);
 void test_no_error_on_correct_checksum(void);
 void test_error_on_incorrect_checksum(void);
@@ -41,6 +42,7 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "8-bit address can be parsed #1", test_can_parse_8bit_hex_2);
 	CU_add_test(suite, "16-bit address can be parsed #1", test_can_parse_address_1);
 	CU_add_test(suite, "Record list can be read from file #1", test_can_read_ihex_rs_from_file_1);
+	CU_add_test(suite, "Record list can be read from file #2", test_can_read_ihex_rs_from_file_2);
 	CU_add_test(suite, "Record list can be read from string #1", test_can_read_ihex_rs_from_string_1);
 	CU_add_test(suite, "Correct checksum can be verified", test_checksum_is_verified_when_correct);
 	CU_add_test(suite, "Incorrect checksum can not be verified", test_checksum_is_not_verified_when_incorrect);
@@ -73,6 +75,16 @@ void test_can_read_ihex_rs_from_file_1(void)
 	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 6);
 
 	IHEX_ASSERT_REC_EQUAL(&(r->ihrs_records[1]), 0x10, 0x0100, IHEX_DATA, 0x21);
+}
+
+void test_can_read_ihex_rs_from_file_2(void)
+{
+	ihex_recordset_t* r = ihex_rs_from_file("tests/res/big-a.hex");
+	
+	CU_ASSERT_PTR_NOT_NULL_FATAL(r);
+	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 214);
+
+	IHEX_ASSERT_REC_EQUAL(&(r->ihrs_records[2]), 0x10, 0x0400, IHEX_DATA, 0x0B);
 }
 
 void test_can_read_ihex_rs_from_string_1(void)

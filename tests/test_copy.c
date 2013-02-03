@@ -5,6 +5,7 @@ void test_memory_is_copied_to_00_address();
 void test_memory_is_copied_to_high_address();
 void test_memory_is_copied_to_32bit_address();
 void test_error_is_set_when_recordset_is_too_large();
+void test_memory_is_copied_1();
 
 void mock_recordset_free(ihex_recordset_t* rs)
 {
@@ -112,9 +113,10 @@ void add_tests_memcopysuite(CU_pSuite suite)
 	CU_add_test(suite, "Memory area can be zeroed", test_can_zero_memory);
 	CU_add_test(suite, "Memory area is zeroed before copy", test_memory_is_zeroed_before_copy);
 	CU_add_test(suite, "Bytes are copied to 0x00 address", test_memory_is_copied_to_00_address);
-	CU_add_test(suite, "Bytes are copied to high address", test_memory_is_copied_to_high_address);
+	CU_add_test(suite, "Bytes are copied to high address #1", test_memory_is_copied_to_high_address);
 	CU_add_test(suite, "Bytes are copied to 32bit address", test_memory_is_copied_to_32bit_address);
 	CU_add_test(suite, "Error is set when recordset is too large", test_error_is_set_when_recordset_is_too_large);
+	CU_add_test(suite, "General memory copy test #1", test_memory_is_copied_1);
 }
 
 void test_can_zero_memory()
@@ -254,4 +256,30 @@ void test_error_is_set_when_recordset_is_too_large()
 	
 	CU_ASSERT_EQUAL(r, IHEX_ERR_ADDRESS_OUT_OF_RANGE);
 	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_ADDRESS_OUT_OF_RANGE);
+}
+
+void test_memory_is_copied_1()
+{
+	ihex_recordset_t *rs  = ihex_rs_from_file("tests/res/big-a.hex");
+	uint8_t          *dst = (uint8_t*) malloc(8192);
+	
+	ihex_mem_copy(rs, dst, 8192);
+	
+	// :100400000B 0B 0B 98 B0 2D 0B 0B 0B 88 80 04 00 00 00 00 29
+	CU_ASSERT_EQUAL(dst[0x400], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x401], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x402], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x403], 0x98);
+	CU_ASSERT_EQUAL(dst[0x404], 0xB0);
+	CU_ASSERT_EQUAL(dst[0x405], 0x2D);
+	CU_ASSERT_EQUAL(dst[0x406], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x407], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x408], 0x0B);
+	CU_ASSERT_EQUAL(dst[0x409], 0x88);
+	CU_ASSERT_EQUAL(dst[0x40A], 0x80);
+	CU_ASSERT_EQUAL(dst[0x40B], 0x04);
+	CU_ASSERT_EQUAL(dst[0x40C], 0x00);
+	CU_ASSERT_EQUAL(dst[0x40D], 0x00);
+	CU_ASSERT_EQUAL(dst[0x40E], 0x00);
+	CU_ASSERT_EQUAL(dst[0x40F], 0x00);
 }
