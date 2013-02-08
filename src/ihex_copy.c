@@ -7,7 +7,7 @@ void ihex_set_error(ihex_error_t errno, char* error);
 int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 {
 	int      r;
-	uint_t   i, j;
+	uint_t   i, j, l;
 	uint32_t offset = 0x00, address = 0x00;
 	char*    last_error = NULL;
 	
@@ -34,12 +34,19 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 		switch (rs->ihrs_records[i].ihr_type)
 		{
 			case IHEX_DATA:
-				for (j = 0; j < rs->ihrs_records[i].ihr_length; j ++)
+				for (j = 0; j < rs->ihrs_records[i].ihr_length; j += 4)
 				{
-					d[address + j] = rs->ihrs_records[i].ihr_data[j];
+					uint32_t v = 0;
+					uint32_t *target = &(d[address + j]);
+					
+					for (l = 0; l < 4 && j + l < rs->ihrs_records[i].ihr_length; l ++)
+					{
+						v += (rs->ihrs_records[i].ihr_data[j+l] << 8 * (3 - l));
+					}
+					*target = v;
 					
 					#ifdef IHEX_DEBUG
-					printf("%08x -> %02x\n", address + j, rs->ihrs_records[i].ihr_data[j]);
+					printf("%08x -> %08x = %08x\n", address + j, v, *target);
 					#endif
 				}
 				break;
