@@ -23,7 +23,7 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	ihex_recordset_t* r;
 	
 	fd = open(filename, O_RDONLY);
-	if (fd == 0)
+	if (fd < 0)
 	{
 		ihex_last_error = "Input file does not exist.";
 		ihex_last_errno = IHEX_ERR_NO_INPUT;
