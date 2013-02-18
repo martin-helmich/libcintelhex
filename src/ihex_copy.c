@@ -16,13 +16,15 @@
 
 void ihex_set_error(ihex_error_t errno, char* error);
 
-int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
+int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
+                  ihex_width_t w, ihex_byteorder_t o)
 {
 	int      r;
 	uint_t   i, j, l;
 	uint32_t offset = 0x00, address = 0x00;
 	
-	ihex_rdata_t d = (ihex_rdata_t) dst;
+	ihex_rdata_t   d = (ihex_rdata_t) dst;
+	ihex_record_t *x;
 	
 	if ((r = ihex_mem_zero(dst, n)) != 0)
 	{
@@ -31,7 +33,8 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 	
 	for (i = 0; i < rs->ihrs_count; i ++)
 	{
-		address = offset + rs->ihrs_records[i].ihr_address;
+		x       = (rs->ihrs_records + i);
+		address = (offset + x->ihr_address);
 		
 		if (address >= n)
 		{
@@ -39,17 +42,17 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 				"Address 0x%08x is out of range.\n", address);
 		}
 		
-		switch (rs->ihrs_records[i].ihr_type)
+		switch (x->ihr_type)
 		{
 			case IHEX_DATA:
-				for (j = 0; j < rs->ihrs_records[i].ihr_length; j += 4)
+				for (j = 0; j < x->ihr_length; j += w)
 				{
-					uint32_t v = 0;
-					uint32_t *target = &(d[address + j]);
+					uint32_t  v      = 0;
+					uint32_t *target = (uint32_t*) (d + address + j);
 					
-					for (l = 0; l < 4 && j + l < rs->ihrs_records[i].ihr_length; l ++)
+					for (l = 0; (l < w) && (j + l < x->ihr_length); l ++)
 					{
-						v += (rs->ihrs_records[i].ihr_data[j+l] << 8 * (3 - l));
+						v += x->ihr_data[j+l] << (8 * ((o == IHEX_ORDER_BIGENDIAN) ? ((w - 1) - l) : l));
 					}
 					*target = v;
 					
@@ -69,7 +72,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 					return 0;
 				}
 			case IHEX_ESA:
-				offset = rs->ihrs_records[i].ihr_data[0] << 4;
+				offset = *(x->ihr_data) << 4;
 				
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);
@@ -77,8 +80,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 				
 				break;
 			case IHEX_ELA:
-				offset = (rs->ihrs_records[i].ihr_data[0] << 24)
-					+ (rs->ihrs_records[i].ihr_data[1] << 16);
+				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
 				
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);

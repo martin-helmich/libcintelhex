@@ -22,8 +22,12 @@
 
 typedef unsigned int  uint_t;
 typedef unsigned long ulong_t;
+
 typedef enum { IHEX_DATA = 0x00, IHEX_EOF = 0x01, IHEX_ESA = 0x02,
                IHEX_SSA = 0x03, IHEX_ELA = 0x04, IHEX_SLA = 0x05 } ihex_rtype_t;
+typedef enum { IHEX_WIDTH_8BIT = 1, IHEX_WIDTH_16BIT = 2,
+               IHEX_WIDTH_32BIT = 4, IHEX_WIDTH_64BIT = 8 } ihex_width_t;
+typedef enum { IHEX_ORDER_BIGENDIAN, IHEX_ORDER_LITTLEENDIAN } ihex_byteorder_t;
 
 typedef uint8_t* ihex_rdata_t;
 typedef uint8_t  ihex_rlen_t;
@@ -115,8 +119,10 @@ int ihex_check_record(ihex_record_t *r);
  *  @param rs  The record set that is to be copied.
  *  @param dst A pointer to the destination address.
  *  @param n   The size of the allocated target area.
+ *  @param w   The width of data words to be copied.
+ *  @param o   Defines whether data words are big or little endian.
  *  @return    0 on success, an error code otherwise. */
-int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n);
+int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n, ihex_width_t w, ihex_byteorder_t o);
 
 /// Fill a memory area with zeroes.
 /** This method fills a whole memory area with zeros.

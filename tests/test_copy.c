@@ -2,6 +2,7 @@
 void test_can_zero_memory();
 void test_memory_is_zeroed_before_copy();
 void test_memory_is_copied_to_00_address();
+void test_memory_is_copied_to_00_address_32b_bigendian();
 void test_memory_is_copied_to_high_address();
 void test_memory_is_copied_to_32bit_address();
 void test_error_is_set_when_recordset_is_too_large();
@@ -113,6 +114,7 @@ void add_tests_memcopysuite(CU_pSuite suite)
 	CU_add_test(suite, "Memory area can be zeroed", test_can_zero_memory);
 	CU_add_test(suite, "Memory area is zeroed before copy", test_memory_is_zeroed_before_copy);
 	CU_add_test(suite, "Bytes are copied to 0x00 address", test_memory_is_copied_to_00_address);
+	CU_add_test(suite, "Bytes are copied to 0x00 address (32bit, big endian)", test_memory_is_copied_to_00_address_32b_bigendian);
 	CU_add_test(suite, "Bytes are copied to high address #1", test_memory_is_copied_to_high_address);
 	CU_add_test(suite, "Bytes are copied to 32bit address", test_memory_is_copied_to_32bit_address);
 	CU_add_test(suite, "Error is set when recordset is too large", test_error_is_set_when_recordset_is_too_large);
@@ -153,7 +155,7 @@ void test_memory_is_zeroed_before_copy()
 		area[i] = 0xAB;
 	}
 	
-	r = ihex_mem_copy(rs, (void*) &(area), 16);
+	r = ihex_mem_copy(rs, (void*) &(area), 16, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	mock_recordset_free(rs);
 	
 	CU_ASSERT_EQUAL_FATAL(r, 0);
@@ -166,25 +168,49 @@ void test_memory_is_zeroed_before_copy()
 
 void test_memory_is_copied_to_00_address()
 {
-	uint8_t area[16];
+	uint8_t area[4];
 	uint_t  i;
 	int     r;
 	
-	ihex_recordset_t* rs = mock_recordset(0x00, 1, 8);
+	ihex_recordset_t* rs = mock_recordset(0x00, 1, 16);
 	
 	for (i = 0; i < 16; i ++)
 	{
 		area[i] = 0xAB;
 	}
 	
-	r = ihex_mem_copy(rs, (void*) &(area), 16);
+	r = ihex_mem_copy(rs, (void*) &(area), 16, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	mock_recordset_free(rs);
 	
 	CU_ASSERT_EQUAL_FATAL(r, 0);
 	
-	for (i = 0; i < 8; i ++)
+	for (i = 0; i < 16; i ++)
 	{
 		CU_ASSERT_EQUAL(area[i], i);
+	}
+}
+
+void test_memory_is_copied_to_00_address_32b_bigendian()
+{
+	uint32_t area[4];
+	uint_t   i;
+	int      r;
+	
+	ihex_recordset_t* rs = mock_recordset(0x00, 1, 16);
+	
+	for (i = 0; i < 16; i ++)
+	{
+		area[i] = 0xAB;
+	}
+	
+	r = ihex_mem_copy(rs, (void*) &(area), 16, IHEX_WIDTH_32BIT, IHEX_ORDER_BIGENDIAN);
+	mock_recordset_free(rs);
+	
+	CU_ASSERT_EQUAL_FATAL(r, 0);
+	
+	for (i = 0; i < 4; i ++)
+	{
+		CU_ASSERT_EQUAL(area[i], ((i*4)<<24)+((i*4+1)<<16)+((i*4+2)<<8)+(i*4+3));
 	}
 }
 
@@ -201,7 +227,7 @@ void test_memory_is_copied_to_high_address()
 		area[i] = 0xAB;
 	}
 	
-	r = ihex_mem_copy(rs, (void*) &(area), 16);
+	r = ihex_mem_copy(rs, (void*) &(area), 16, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	mock_recordset_free(rs);
 	
 	CU_ASSERT_EQUAL_FATAL(r, 0);
@@ -225,7 +251,7 @@ void test_memory_is_copied_to_32bit_address()
 		area[i] = 0xAB;
 	}
 	
-	r = ihex_mem_copy(rs, (void*) area, 262144);
+	r = ihex_mem_copy(rs, (void*) area, 262144, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	mock_recordset_free(rs);
 	
 	CU_ASSERT_EQUAL_FATAL(r, 0);
@@ -251,7 +277,7 @@ void test_error_is_set_when_recordset_is_too_large()
 		area[i] = 0xAB;
 	}
 	
-	r = ihex_mem_copy(rs, (void*) &(area), 16);
+	r = ihex_mem_copy(rs, (void*) &(area), 16, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	mock_recordset_free(rs);
 	
 	CU_ASSERT_EQUAL(r, IHEX_ERR_ADDRESS_OUT_OF_RANGE);
@@ -263,7 +289,7 @@ void test_memory_is_copied_1()
 	ihex_recordset_t *rs  = ihex_rs_from_file("tests/res/big-a.hex");
 	uint8_t          *dst = (uint8_t*) malloc(8192);
 	
-	ihex_mem_copy(rs, dst, 8192);
+	ihex_mem_copy(rs, dst, 8192, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	
 	// :100400000B 0B 0B 98 B0 2D 0B 0B 0B 88 80 04 00 00 00 00 29
 	CU_ASSERT_EQUAL(dst[0x400], 0x0B);
