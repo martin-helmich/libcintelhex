@@ -11,6 +11,15 @@
 
 #define IHEX_CHR_RECORDMARK 0x3A
 
+#define IHEX_SET_ERROR(errno, error, ...) \
+	{ char *e = malloc(512); \
+	  snprintf(e, 512, error, ##__VA_ARGS__); \
+	  ihex_last_errno = errno; \
+	  ihex_last_error = e; }
+#define IHEX_SET_ERROR_RETURN(errno, error, ...) \
+	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
+	  return errno; }
+
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
 ihex_recordset_t* ihex_rs_from_file(char* filename)
@@ -25,20 +34,14 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 	{
-		ihex_last_error = "Input file does not exist.";
-		ihex_last_errno = IHEX_ERR_NO_INPUT;
-		
-		return NULL;
+		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist.", filename);
+		goto open_failed;
 	}
 	
 	if (fstat (fd, &s) != 0)
 	{
-		close(fd);
-		
-		ihex_last_error = "Could not stat input file.";
-		ihex_last_errno = IHEX_ERR_NO_INPUT;
-		
-		return NULL;
+		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s.", filename);
+		goto stat_failed;
 	}
 	
 	l = s.st_size;
@@ -46,10 +49,20 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	
 	r = ihex_rs_from_string(c);
 	
+	// No special error treatment necessary, we need to unmap and close
+	// the file anyway.
 	munmap((void*) c, l);
 	close(fd);
 	
 	return r;
+	
+	// Clean up on error.
+	mmap_failed:
+	stat_failed:
+		close(fd);
+	open_failed:
+	
+	return NULL;
 }
 
 ihex_recordset_t* ihex_rs_from_string(char* data)
@@ -84,12 +97,7 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 		ihex_rlen_t l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
 		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, &(rec[i-1]))) != 0)
 		{
-			char *e = malloc(512);
-			sprintf(e, "Line %i: %s\n", i, ihex_last_error);
-			
-			ihex_last_errno = r;
-			ihex_last_error = e;
-			
+			IHEX_SET_ERROR(r, "Line %i: %s", i, ihex_last_error);
 			return NULL;
 		}
 		
@@ -102,8 +110,8 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	
 	if (recls->ihrs_records[recls->ihrs_count - 1].ihr_type != IHEX_EOF)
 	{
-		ihex_last_errno = IHEX_ERR_NO_EOF;
-		ihex_last_error = "Missing EOF record.\n";
+		IHEX_SET_ERROR(IHEX_ERR_NO_EOF, "Missing EOF record.");
+		return NULL;
 	}
 	
 	return recls;
@@ -116,8 +124,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	// Records needs to begin with record mark (usually ":")
 	if (data[0] != IHEX_CHR_RECORDMARK)
 	{
-		ihex_last_error = "Missing record mark.";
-		return IHEX_ERR_PARSE_ERROR;
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_PARSE_ERROR, "Missing record mark.");
 	}
 	
 	// Record layout:
@@ -137,24 +144,21 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	     data[12 + record->ihr_length*2] != 0x0A) &&
 	    (data[11 + record->ihr_length*2] != 0x0A))
 	{
-		ihex_last_error = "Incorrect record length.";
-		return IHEX_ERR_WRONG_RECORD_LENGTH;
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Incorrect record length.");
 	}
 	
 	for (i = 0; i < record->ihr_length; i ++)
 	{
 		if (data[9 + i*2] == 0x0A || data[9 + i*2] == 0x0D)
 		{
-			ihex_last_error = "Unexpected end of line.";
-			return IHEX_ERR_WRONG_RECORD_LENGTH;
+			IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Unexpected end of line.");
 		}
 		record->ihr_data[i] = ihex_fromhex8(data + 9 + i*2);
 	}
 	
 	if (ihex_check_record(record) != 0)
 	{
-		ihex_last_error = "Checksum validation failed.";
-		return IHEX_ERR_INCORRECT_CHECKSUM;
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_INCORRECT_CHECKSUM, "Checksum validation failed.");
 	}
 	
 	return 0;
