@@ -2,6 +2,7 @@
 #include "cintelhex.h"
 
 #include <stdio.h>
+#include <string.h>
 
 void ihex_set_error(ihex_error_t errno, char* error);
 
@@ -98,12 +99,16 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 
 int ihex_mem_zero(void* dst, ulong_t n)
 {
+#ifdef HAVE_MEMSET
+	memset(dst, 0 , n);
+#else
 	ulong_t i = 0;
 	
 	for (i = 0; i < n; i ++)
 	{
 		((uint8_t*) dst)[i] = 0x00;
 	}
+#endif
 	
 	return 0;
 }
