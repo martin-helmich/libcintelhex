@@ -54,7 +54,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 					{
 						v += x->ihr_data[j+l] << (8 * ((o == IHEX_ORDER_BIGENDIAN) ? ((w - 1) - l) : l));
 					}
-					*target = v;
+					*(target) = v;
 					
 					#ifdef IHEX_DEBUG
 					printf("%08x -> %08x = %08x\n", address + j, v, *target);

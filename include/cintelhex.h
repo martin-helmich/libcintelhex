@@ -135,9 +135,9 @@ int ihex_mem_zero(void* dst, ulong_t n);
 /// Return error string, or NULL if no error occurred.
 char* ihex_error();
 
-/// Parse 8-bit hex input
+/// Parse 8-bit hex input.
 uint8_t ihex_fromhex8(uint8_t *input);
 
-/// Parse 16-bit hex input
+/// Parse 16-bit hex input.
 uint16_t ihex_fromhex16(uint8_t *input);
 #endif

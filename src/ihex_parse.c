@@ -74,8 +74,8 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	uint_t i = 0;
 	int    r = 0, c = 0;
 	
-	ihex_last_errno    = 0;
-	ihex_last_error    = NULL;
+	ihex_last_errno = 0;
+	ihex_last_error = NULL;
 	
 	// Count number of record marks in input string.
 	for (char *p = data; *p != 0x00; p ++)
@@ -94,19 +94,19 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	recls->ihrs_count   = c;
 	recls->ihrs_records = rec;
 	
-	while (*data != 0x00)
+	while (*(data) != 0x00)
 	{
 		i ++;
 		
 		ihex_rlen_t l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
-		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, &(rec[i-1]))) != 0)
+		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, rec + i - 1)) != 0)
 		{
 			IHEX_SET_ERROR(r, "Line %i: %s", i, ihex_last_error);
 			return NULL;
 		}
 		
-		data += rec[i-1].ihr_length * 2 + 10;
-		while (*data != IHEX_CHR_RECORDMARK && *data != 0x00)
+		data += (rec[i-1].ihr_length * 2) + 10;
+		while (*(data) != IHEX_CHR_RECORDMARK && *(data) != 0x00)
 		{
 			data ++;
 		}
@@ -126,7 +126,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	uint_t i;
 	
 	// Records needs to begin with record mark (usually ":")
-	if (data[0] != IHEX_CHR_RECORDMARK)
+	if (*(data) != IHEX_CHR_RECORDMARK)
 	{
 		IHEX_SET_ERROR_RETURN(IHEX_ERR_PARSE_ERROR, "Missing record mark.");
 	}
@@ -136,17 +136,17 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	// 0 12 3456 78 90123456789012345678901234567890 12
 	// : 10 0100 00 214601360121470136007EFE09D21901 40
 	
-	record->ihr_length   = (ihex_rlen_t)  ihex_fromhex8(data + 1);
+	record->ihr_length   = (ihex_rlen_t)  ihex_fromhex8 (data + 1);
 	record->ihr_address  = (ihex_addr_t)  ihex_fromhex16(data + 3);
-	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8(data + 7);
-	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8(data + 9 + record->ihr_length * 2);
+	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8 (data + 7);
+	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8 (data + 9 + record->ihr_length * 2);
 
 	record->ihr_data     = (ihex_rdata_t) malloc(record->ihr_length);
 	
 	// Records needs to end with CRLF or LF.
-	if ((data[11 + record->ihr_length*2] != 0x0D ||
-	     data[12 + record->ihr_length*2] != 0x0A) &&
-	    (data[11 + record->ihr_length*2] != 0x0A))
+	if (   (   data[11 + record->ihr_length * 2] != 0x0D
+	        || data[12 + record->ihr_length * 2] != 0x0A)
+	    && (data[11 + record->ihr_length * 2] != 0x0A))
 	{
 		IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Incorrect record length.");
 	}
