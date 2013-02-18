@@ -5,15 +5,25 @@ Author
 ------
 
 Martin Helmich <martin.helmich@hs-osnabrueck.de>  
+Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
+
 University of Applied Sciences Osnabrück
 
 Synopsis
 --------
 
-libcintelhex is a C library for parsing Intel HEX files.
+libcintelhex is a C library for parsing Intel HEX files and mapping their
+binary contents into application or device memory.
 
 Installation
 ------------
+
+### Requirements
+
+libcintelhex has no requirements besides a halfway recent GCC and a C standard
+library.
+
+### Compilation
 
 Installation as usual:
 
@@ -42,6 +52,8 @@ Intel HEX data can be copied to any region in memory (either somewhere in RAM,
 but also to mapped memory regions of hardware devices):
 
     void* dst = malloc(8192); // Allocate target region.
-    int   r   = ihex_mem_copy(rs, dst, 8192); // Copy data to target region.
+    int   r   = ihex_mem_copy(rs, dst, 8192,
+        IHEX_WIDTH_32BIT, IHEX_ORDER_BIGENDIAN); // Copy data to target region.
 
     if (r == 0) printf("All is well.\n");
+    else return r;
