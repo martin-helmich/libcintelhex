@@ -45,7 +45,11 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	}
 	
 	l = s.st_size;
-	c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0);
+	if ((c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0)) == (void*) -1)
+	{
+		IHEX_SET_ERROR(IHEX_ERR_MMAP_FAILED, "Could not map file %s.", filename);
+		goto mmap_failed;
+	}
 	
 	r = ihex_rs_from_string(c);
 	
