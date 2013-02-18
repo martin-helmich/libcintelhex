@@ -1,3 +1,4 @@
+#include "config.h"
 #include "cintelhex.h"
 
 #include <stdio.h>
