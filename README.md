@@ -39,6 +39,8 @@ Installation
 libcintelhex has no requirements besides a halfway recent GCC and a C standard
 library.
 
+When cloning from Git, you will also need autoconf to generate the configure script.
+
 ### Compilation
 
 Installation as usual:
