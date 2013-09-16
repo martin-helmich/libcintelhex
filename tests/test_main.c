@@ -38,8 +38,13 @@
 	{ CU_assertImplementation(CU_FALSE, LINE, (str), FILE, "", CU_FALSE); }
 #endif
 
-#include "CUnit/Basic.h"
+#include "config.h"
+
+#include <CUnit/Basic.h>
+#ifdef HAVE_CUNIT_CUCURSES_H
 #include <CUnit/CUCurses.h>
+#endif
+
 #include "test_parse.c"
 #include "test_record.c"
 #include "test_copy.c"
@@ -54,6 +59,7 @@ int main(int argc, char* argv[])
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);
 	
+	#ifdef HAVE_CUNIT_CUCURSES_H
 	if (argc > 1 && strcmp(argv[1], "-i") == 0)
 	{
 		CU_curses_run_tests();
@@ -62,6 +68,9 @@ int main(int argc, char* argv[])
 	{
 		CU_basic_run_tests();
 	}
+	#else
+	CU_basic_run_tests();
+	#endif
 	
 	CU_cleanup_registry();
 	return CU_get_error();

@@ -1,5 +1,11 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
+/* Define to 1 if you have the <CUnit/Basic.h> header file. */
+#undef HAVE_CUNIT_BASIC_H
+
+/* Define to 1 if you have the <CUnit/CUCurses.h> header file. */
+#undef HAVE_CUNIT_CUCURSES_H
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
