@@ -100,6 +100,9 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	
 	ihex_last_errno = 0;
 	ihex_last_error = NULL;
+
+	ihex_record_t    *rec;
+	ihex_recordset_t *recls;
 	
 	// Count number of record marks in input string.
 	for (char *p = data; *p != 0x00; p ++)
@@ -112,8 +115,17 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	
 	// Allocate memory for the record container structure and for each
 	// individual record.
-	ihex_record_t    *rec   = (ihex_record_t*)    calloc(c, sizeof(ihex_record_t));
-	ihex_recordset_t *recls = (ihex_recordset_t*) malloc(sizeof(ihex_recordset_t));
+	if ((rec = (ihex_record_t*) calloc(c, sizeof(ihex_record_t))) == NULL)
+	{
+		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+		goto malloc_rec_failed;
+	}
+
+	if ((recls = (ihex_recordset_t*) malloc(sizeof(ihex_recordset_t))) == NULL)
+	{
+		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+		goto malloc_recls_failed;
+	}
 	
 	recls->ihrs_count   = c;
 	recls->ihrs_records = rec;
@@ -126,10 +138,10 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, rec + i - 1)) != 0)
 		{
 			IHEX_SET_ERROR(r, "Line %i: %s", i, ihex_last_error);
-			return NULL;
+			goto parse_single_failed;
 		}
 		
-		data += (rec[i-1].ihr_length * 2) + 10;
+		data += (rec[i - 1].ihr_length * 2) + 10;
 		while (*(data) != IHEX_CHR_RECORDMARK && *(data) != 0x00)
 		{
 			data ++;
@@ -139,10 +151,23 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	if (recls->ihrs_records[recls->ihrs_count - 1].ihr_type != IHEX_EOF)
 	{
 		IHEX_SET_ERROR(IHEX_ERR_NO_EOF, "Missing EOF record.");
-		return NULL;
+		goto missing_eof_record;
 	}
 	
 	return recls;
+
+	missing_eof_record:
+		for (i = 0; i < recls->ihrs_count; i ++)
+		{
+			free(recls->ihrs_records[i].ihr_data);
+		}
+	parse_single_failed:
+		free(recls);
+	malloc_recls_failed:
+		free(rec);
+	malloc_rec_failed:
+
+	return NULL;
 }
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record)
@@ -172,6 +197,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	        || data[12 + record->ihr_length * 2] != 0x0A)
 	    && (data[11 + record->ihr_length * 2] != 0x0A))
 	{
+		free(record->ihr_data);
 		IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Incorrect record length.");
 	}
 	
@@ -179,6 +205,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	{
 		if (data[9 + i*2] == 0x0A || data[9 + i*2] == 0x0D)
 		{
+			free(record->ihr_data);
 			IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Unexpected end of line.");
 		}
 		record->ihr_data[i] = ihex_fromhex8(data + 9 + i*2);
@@ -186,6 +213,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	
 	if (ihex_check_record(record) != 0)
 	{
+		free(record->ihr_data);
 		IHEX_SET_ERROR_RETURN(IHEX_ERR_INCORRECT_CHECKSUM, "Checksum validation failed.");
 	}
 	
