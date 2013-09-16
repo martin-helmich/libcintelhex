@@ -45,7 +45,7 @@ release: $(OBJS)
 	$(CC) $(LDFLAGS) -o bin/$(EXECUTABLE) $(OBJS)
 
 release_static: $(OBJS)
-	$(AR) rcs $(STATICLIB) $(OBJS)
+	$(AR) rcs bin/$(STATICLIB) $(OBJS)
 
 prepare:
 	@MKDIR_P@ bin
@@ -53,6 +53,7 @@ prepare:
 
 install: all
 	@INSTALL@ -C bin/*.so -t @libdir@/
+	@INSTALL@ -C bin/*.a -t @libdir@/
 	@INSTALL@ -C include/*.h -t @includedir@/
 
 test: all
