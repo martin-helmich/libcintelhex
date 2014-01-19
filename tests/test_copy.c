@@ -191,7 +191,7 @@ void test_memory_is_zeroed_before_copy()
 
 void test_memory_is_copied_to_00_address()
 {
-	uint8_t area[4];
+	uint8_t area[16];
 	uint_t  i;
 	int     r;
 	
@@ -215,7 +215,7 @@ void test_memory_is_copied_to_00_address()
 
 void test_memory_is_copied_to_00_address_32b_bigendian()
 {
-	uint32_t area[4];
+	uint32_t area[16];
 	uint_t   i;
 	int      r;
 	
