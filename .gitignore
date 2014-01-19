@@ -7,3 +7,4 @@ Makefile
 bin
 obj
 config.h
+*~
