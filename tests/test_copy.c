@@ -311,6 +311,12 @@ void test_memory_is_copied_1()
 {
 	ihex_recordset_t *rs  = ihex_rs_from_file("tests/res/big-a.hex");
 	uint8_t          *dst = (uint8_t*) malloc(8192);
+
+	if (rs == NULL)
+	{
+		CU_FAIL("File \"tests/res/big-a.hex\" does not exist.");
+		return;
+	}
 	
 	ihex_mem_copy(rs, dst, 8192, IHEX_WIDTH_8BIT, IHEX_ORDER_BIGENDIAN);
 	
