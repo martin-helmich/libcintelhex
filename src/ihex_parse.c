@@ -31,7 +31,9 @@
 #include <unistd.h>
 
 #include <sys/stat.h>
+#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif
 
 #define IHEX_CHR_RECORDMARK 0x3A
 
@@ -69,23 +71,47 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	}
 	
 	l = s.st_size;
+#ifdef HAVE_MMAP
 	if ((c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0)) == (void*) -1)
 	{
 		IHEX_SET_ERROR(IHEX_ERR_MMAP_FAILED, "Could not map file %s.", filename);
 		goto mmap_failed;
 	}
+#else
+	if ((c = (char*) malloc(l)) == NULL)
+	{
+		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not allocate memory for reading file %s.", filename);
+		goto malloc_failed;
+	}
+
+	if (read(fd, c, l) != l)
+	{
+		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s.", filename);
+		goto read_failed;
+	}
+#endif
 	
 	r = ihex_rs_from_string(c);
 	
 	// No special error treatment necessary, we need to unmap and close
 	// the file anyway.
+#ifdef HAVE_MMAP
 	munmap((void*) c, l);
+#else
+	free(c);
+#endif
 	close(fd);
 	
 	return r;
 	
 	// Clean up on error.
+#ifdef HAVE_MMAP
 	mmap_failed:
+#else
+	read_failed:
+		free(c);
+	malloc_failed:
+#endif
 	stat_failed:
 		close(fd);
 	open_failed:

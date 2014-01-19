@@ -37,7 +37,7 @@ AC_PROG_MKDIR_P
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h stdint.h stdlib.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h stdint.h stdlib.h unistd.h sys/mman.h])
 AC_CHECK_HEADERS([CUnit/Basic.h CUnit/CUCurses.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
