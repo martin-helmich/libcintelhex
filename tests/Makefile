@@ -21,11 +21,11 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-CFLAGS = -I ../include -I ..
+CFLAGS += -I ../include -I ..
 OBJS = test_main.o
 
 all: $(OBJS)
-	$(CC) -o test $(OBJS) ../obj/*.o -lcunit
+	$(CC) $(CFLAGS) -o test $(OBJS) ../obj/*.o -lcunit
 
 clean:
 	rm -f $(OBJS) test
