@@ -52,9 +52,11 @@ prepare:
 	@MKDIR_P@ obj
 
 install: all
-	@INSTALL@ -C bin/*.so -t @libdir@/
-	@INSTALL@ -C bin/*.a -t @libdir@/
-	@INSTALL@ -C include/*.h -t @includedir@/
+	@MKDIR_P@ $(DESTDIR)@libdir@/
+	@MKDIR_P@ $(DESTDIR)@includedir@/
+	@INSTALL@ -C bin/*.so -t $(DESTDIR)@libdir@/
+	@INSTALL@ -C bin/*.a -t $(DESTDIR)@libdir@/
+	@INSTALL@ -C include/*.h -t $(DESTDIR)@includedir@/
 
 test: all
 	$(MAKE) -C tests clean all
