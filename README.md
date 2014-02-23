@@ -1,6 +1,8 @@
 cIntelHex - A C library for parsing Intel HEX files
 ===================================================
 
+![Build status](https://api.travis-ci.org/martin-helmich/libcintelhex.png)
+
 Authors
 -------
 
