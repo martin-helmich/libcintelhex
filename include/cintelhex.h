@@ -131,7 +131,7 @@ ihex_error_t ihex_errno();
 
 /// Checks if a record's checksum is valid.
 /** Validate the record by adding up all bytes of a record.
- *  Including the checksum, the lower 8 bytes of the sum of all
+ *  Including the checksum, the lower 8 bits of the sum of all
  *  bytes must be 0x00.
  * 
  *  @param r The record that is to be validated.

@@ -63,10 +63,10 @@ After installation, include `cintelhex.h` and add `-lcintelhex` to your linker f
 This library can parse Intel HEX data either from an input file or directly
 from a given string:
 
-    ihex_records_t* r1 = ihex_from_file("my_filename");
+    ihex_records_t* r1 = ihex_rs_from_file("my_filename");
     
     char* input = ":1a01000021A4B2Fe...";
-    ihex_records_t* r2 = ihex_from_string(input);
+    ihex_records_t* r2 = ihex_rs_from_string(input);
 
 ### Applying Intel HEX data
 
