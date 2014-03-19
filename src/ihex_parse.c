@@ -48,7 +48,7 @@
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
-ihex_recordset_t* ihex_rs_from_file(char* filename)
+ihex_recordset_t* ihex_rs_from_file(const char* filename)
 {
 	struct stat s;
 	int         fd;
@@ -119,7 +119,7 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	return NULL;
 }
 
-ihex_recordset_t* ihex_rs_from_string(char* data)
+ihex_recordset_t* ihex_rs_from_string(const char* data)
 {
 	uint_t i = 0;
 	int    r = 0, c = 0;
@@ -131,7 +131,7 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	ihex_recordset_t *recls;
 	
 	// Count number of record marks in input string.
-	for (char *p = data; *p != 0x00; p ++)
+	for (const char *p = data; *p != 0x00; p ++)
 	{
 		if (*p == IHEX_CHR_RECORDMARK)
 		{

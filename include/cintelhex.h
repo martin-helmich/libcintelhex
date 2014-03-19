@@ -104,7 +104,7 @@ extern char*        ihex_last_error; //!< Description of last error.
  * 
  *  @param filename The filename of the input file.
  *  @return         A pointer to a newly generated recordset object. */
-ihex_recordset_t* ihex_rs_from_file(char* filename);
+ihex_recordset_t* ihex_rs_from_file(const char* filename);
 
 /// Parse Intel HEX string from string input.
 /** This method parses an Intel HEX string from a string input. This
@@ -113,7 +113,7 @@ ihex_recordset_t* ihex_rs_from_file(char* filename);
  * 
  *  @param data The input string.
  *  @return         A pointer to a newly generated recordset object. */
-ihex_recordset_t* ihex_rs_from_string(char* data);
+ihex_recordset_t* ihex_rs_from_string(const char* data);
 
 /// Gets a record set's size.
 /** This method determines a record set's size. This is done by adding
