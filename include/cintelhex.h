@@ -30,6 +30,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 // CONSTANT DEFINITIONS
 
 #define IHEX_ERR_INCORRECT_CHECKSUM   0x01
@@ -166,4 +171,9 @@ uint8_t ihex_fromhex8(uint8_t *input);
 
 /// Parse 16-bit hex input.
 uint16_t ihex_fromhex16(uint8_t *input);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
 #endif
