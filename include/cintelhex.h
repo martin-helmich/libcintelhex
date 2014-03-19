@@ -127,7 +127,7 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
 /// Return error code, or 0 if no error occurred.
 /** This method returns the error code of the latest error.
  *  @return The error code of the latest error. */
-ihex_error_t ihex_errno();
+ihex_error_t ihex_errno(void);
 
 /// Checks if a record's checksum is valid.
 /** Validate the record by adding up all bytes of a record.
@@ -159,7 +159,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n, ihex_width_t w, ih
 int ihex_mem_zero(void* dst, ulong_t n);
 
 /// Return error string, or NULL if no error occurred.
-char* ihex_error();
+char* ihex_error(void);
 
 /// Parse 8-bit hex input.
 uint8_t ihex_fromhex8(uint8_t *input);
