@@ -218,7 +218,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	// 0 12 3456 78 90123456789012345678901234567890 12
 	// : 10 0100 00 214601360121470136007EFE09D21901 40
 	
-	record->ihr_length   = (ihex_rlen_t)  ihex_fromhex8 (data + 1);
+	record->ihr_length   = (ihex_rlen_t)  length;
 	record->ihr_address  = (ihex_addr_t)  ihex_fromhex16(data + 3);
 	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8 (data + 7);
 	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8 (data + 9 + record->ihr_length * 2);
