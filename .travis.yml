@@ -2,6 +2,9 @@ language: c
 compiler:
   - gcc
   - clang
+matrix:
+  allow_failures:
+    - compiler: clang
 install: sudo apt-get update && sudo apt-get install libcunit1-dev
 before_script: autoconf
 script: ./configure && make && make test
