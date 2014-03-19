@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <sys/stat.h>
 #ifdef HAVE_SYS_MMAN_H
@@ -46,6 +47,7 @@
 	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
 	  return errno; }
 
+ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size);
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
 ihex_recordset_t* ihex_rs_from_file(const char* filename)
@@ -91,7 +93,7 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	}
 #endif
 	
-	r = ihex_rs_from_string(c);
+	r = ihex_rs_from_mem(c, l);
 	
 	// No special error treatment necessary, we need to unmap and close
 	// the file anyway.
@@ -119,7 +121,7 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	return NULL;
 }
 
-ihex_recordset_t* ihex_rs_from_string(const char* data)
+ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size)
 {
 	uint_t i = 0;
 	int    r = 0, c = 0;
@@ -194,6 +196,11 @@ ihex_recordset_t* ihex_rs_from_string(const char* data)
 	malloc_rec_failed:
 
 	return NULL;
+}
+
+ihex_recordset_t* ihex_rs_from_string(const char* data)
+{
+	return ihex_rs_from_mem(data, strlen(data));
 }
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record)
