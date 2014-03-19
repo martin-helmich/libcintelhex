@@ -106,12 +106,22 @@ extern char*        ihex_last_error; //!< Description of last error.
  *  @return         A pointer to a newly generated recordset object. */
 ihex_recordset_t* ihex_rs_from_file(const char* filename);
 
+/// Parse Intel HEX string from memory input.
+/** This method parses an Intel HEX string stored in memory. This
+ *  method returns a pointer to a newly generated ihex_recordset_t
+ *  object.
+ * 
+ *  @param data The input start address.
+ *  @param size The input size in bytes.
+ *  @return         A pointer to a newly generated recordset object. */
+ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size);
+
 /// Parse Intel HEX string from string input.
 /** This method parses an Intel HEX string from a string input. This
  *  method returns a pointer to a newly generated ihex_recordset_t
  *  object.
  * 
- *  @param data The input string.
+ *  @param data The input string (NUL-terminated).
  *  @return         A pointer to a newly generated recordset object. */
 ihex_recordset_t* ihex_rs_from_string(const char* data);
 

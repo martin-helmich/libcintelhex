@@ -47,7 +47,6 @@
 	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
 	  return errno; }
 
-ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size);
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
 ihex_recordset_t* ihex_rs_from_file(const char* filename)
