@@ -38,18 +38,18 @@ int  init_parsingsuite(void);
 int  clean_parsingsuite(void);
 void add_tests_parsingsuite(CU_pSuite suite);
 
-void test_can_parse_8bit_hex_1();
-void test_can_parse_8bit_hex_2();
+void test_can_parse_8bit_hex_1(void);
+void test_can_parse_8bit_hex_2(void);
 void test_can_parse_address_1(void);
-void test_can_read_ihex_rs_from_file_1();
-void test_can_read_ihex_rs_from_file_2();
+void test_can_read_ihex_rs_from_file_1(void);
+void test_can_read_ihex_rs_from_file_2(void);
 void test_can_read_ihex_rs_from_string_1(void);
 void test_no_error_on_correct_checksum(void);
 void test_error_on_incorrect_checksum(void);
 void test_checksum_is_verified_when_correct(void);
 void test_checksum_is_not_verified_when_incorrect(void);
 void test_error_on_missing_eof(void);
-void test_error_on_incorrect_record_length();
+void test_error_on_incorrect_record_length(void);
 
 int init_parsingsuite(void)
 {
@@ -78,12 +78,12 @@ void add_tests_parsingsuite(CU_pSuite suite)
 	CU_add_test(suite, "Error is set on incorrect record length", test_error_on_incorrect_record_length);
 }
 
-void test_can_parse_8bit_hex_1()
+void test_can_parse_8bit_hex_1(void)
 {
 	CU_ASSERT_EQUAL(ihex_fromhex8((uint8_t*) "10"), 0x10);
 }
 
-void test_can_parse_8bit_hex_2()
+void test_can_parse_8bit_hex_2(void)
 {
 	CU_ASSERT_EQUAL(ihex_fromhex8((uint8_t*) "00"), 0x00);
 }
