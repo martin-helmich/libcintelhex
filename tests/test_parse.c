@@ -30,6 +30,8 @@
 	CU_ASSERT_EQUAL((rec)->ihr_type, type); \
 	CU_ASSERT_EQUAL((rec)->ihr_data[0], dat0);
 
+#define UNUSED __attribute__((unused))
+
 static void test_can_read_ihex_rs_from_string(char* s);
 
 int  init_parsingsuite(void);
@@ -120,7 +122,7 @@ void test_can_read_ihex_rs_from_string_1(void)
 void test_no_error_on_correct_checksum(void)
 {
 	char* s = ":10010000214601360121470136007EFE09D2190140\r\n:00000001FF\r\n";
-	ihex_recordset_t *records = ihex_rs_from_string(s);
+	ihex_recordset_t *records UNUSED = ihex_rs_from_string(s);
 
 	CU_ASSERT_EQUAL(ihex_errno(), 0);
 	CU_ASSERT_PTR_NULL(ihex_error());
@@ -129,7 +131,7 @@ void test_no_error_on_correct_checksum(void)
 void test_error_on_missing_eof(void)
 {
 	char* s = ":10010000214601360121470136007EFE09D2190140\r\n";
-	ihex_recordset_t *records = ihex_rs_from_string(s);
+	ihex_recordset_t *records UNUSED = ihex_rs_from_string(s);
 
 	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_NO_EOF);
 	CU_ASSERT_PTR_NOT_NULL(ihex_error());
@@ -139,7 +141,7 @@ void test_error_on_incorrect_checksum(void)
 {
 	//                                                   v--- Wrong byte!
 	char* s = ":10010000214601360121470136007EFE09D2190141\r\n:00000001FF\r\n";
-	ihex_recordset_t *records = ihex_rs_from_string(s);
+	ihex_recordset_t *records UNUSED = ihex_rs_from_string(s);
 
 	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_INCORRECT_CHECKSUM);
 }
@@ -148,7 +150,7 @@ void test_error_on_incorrect_record_length(void)
 {
 	//                                                v--- Missing byte!
 	char* s = ":10010000214601360121470136007EFE09D21940\r\n:00000001FF\r\n";
-	ihex_recordset_t *records = ihex_rs_from_string(s);
+	ihex_recordset_t *records UNUSED = ihex_rs_from_string(s);
 
 	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_WRONG_RECORD_LENGTH);
 }
