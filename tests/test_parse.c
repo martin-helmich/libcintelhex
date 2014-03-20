@@ -80,17 +80,17 @@ void add_tests_parsingsuite(CU_pSuite suite)
 
 void test_can_parse_8bit_hex_1()
 {
-	CU_ASSERT_EQUAL(ihex_fromhex8("10"), 0x10);
+	CU_ASSERT_EQUAL(ihex_fromhex8((uint8_t*) "10"), 0x10);
 }
 
 void test_can_parse_8bit_hex_2()
 {
-	CU_ASSERT_EQUAL(ihex_fromhex8("00"), 0x00);
+	CU_ASSERT_EQUAL(ihex_fromhex8((uint8_t*) "00"), 0x00);
 }
 
 void test_can_parse_address_1(void)
 {
-	CU_ASSERT_EQUAL(ihex_fromhex16("1000"), 0x1000);
+	CU_ASSERT_EQUAL(ihex_fromhex16((uint8_t*) "1000"), 0x1000);
 }
 
 void test_can_read_ihex_rs_from_file_1(void)
