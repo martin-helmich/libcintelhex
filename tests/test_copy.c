@@ -22,6 +22,7 @@
  */
 
 
+void test_can_free_memory(void);
 void test_can_zero_memory(void);
 void test_memory_is_zeroed_before_copy(void);
 void test_memory_is_copied_to_00_address(void);
@@ -33,18 +34,7 @@ void test_memory_is_copied_1(void);
 
 void mock_recordset_free(ihex_recordset_t* rs)
 {
-	uint_t i = 0;
-	
-	for (i = 0; i < rs->ihrs_count; i ++)
-	{
-		if (rs->ihrs_records[i].ihr_data != NULL)
-		{
-			free(rs->ihrs_records[i].ihr_data);
-		}
-	}
-	
-	free(rs->ihrs_records);
-	free(rs);
+	ihex_rs_free(rs);
 }
 
 ihex_recordset_t* mock_recordset(ihex_addr_t base, uint_t count, ihex_rlen_t length)
@@ -134,6 +124,7 @@ int clean_memcopysuite(void)
 
 void add_tests_memcopysuite(CU_pSuite suite)
 {
+	CU_add_test(suite, "Memory area can be freed", test_can_free_memory);
 	CU_add_test(suite, "Memory area can be zeroed", test_can_zero_memory);
 	CU_add_test(suite, "Memory area is zeroed before copy", test_memory_is_zeroed_before_copy);
 	CU_add_test(suite, "Bytes are copied to 0x00 address", test_memory_is_copied_to_00_address);
@@ -144,7 +135,18 @@ void add_tests_memcopysuite(CU_pSuite suite)
 	CU_add_test(suite, "General memory copy test #1", test_memory_is_copied_1);
 }
 
-void test_can_zero_memory(void)
+void test_can_free_memory(void)
+{
+	ihex_recordset_t* rs = mock_recordset(0x00, 1, 8);
+
+	// We cannot really assert whether the memory has actually been freed.
+	// With this test, we can check against memory violations during a
+	// ihex_rs_free call, but this test would also pass if ihex_rs_free
+	// did absolutely nothing.
+	ihex_rs_free(rs);
+}
+
+void test_can_zero_memory()
 {
 	uint8_t area[16];
 	uint_t  i;

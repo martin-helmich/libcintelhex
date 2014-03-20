@@ -139,6 +139,14 @@ ihex_recordset_t* ihex_rs_from_string(const char* data);
  *  @return   The record set's size. */
 ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
 
+/// Frees resources associated with a record set.
+/** This method frees all memory allocated in one of the
+ *  ihex_rs_from_*() functions.  Passing NULL as input is allowed and
+ *  has no effect.
+ * 
+ *  @param rs A pointer to the record set. */
+void ihex_rs_free(ihex_recordset_t* rs);
+
 /// Return error code, or 0 if no error occurred.
 /** This method returns the error code of the latest error.
  *  @return The error code of the latest error. */

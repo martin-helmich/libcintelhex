@@ -36,3 +36,21 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs)
 	
 	return s;
 }
+
+void ihex_rs_free(ihex_recordset_t* rs)
+{
+	uint_t i = 0;
+	
+	if (rs == NULL) return;
+	
+	if (rs->ihrs_records != NULL)
+	{
+		for (i = 0; i < rs->ihrs_count; i++)
+		{
+			free(rs->ihrs_records[i].ihr_data);
+		}
+	}
+	
+	free(rs->ihrs_records);
+	free(rs);
+}
