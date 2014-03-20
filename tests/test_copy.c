@@ -33,18 +33,7 @@ void test_memory_is_copied_1();
 
 void mock_recordset_free(ihex_recordset_t* rs)
 {
-	uint_t i = 0, j = 0;
-	
-	for (i = 0; i < rs->ihrs_count; i ++)
-	{
-		if (rs->ihrs_records[i].ihr_data != NULL)
-		{
-			free(rs->ihrs_records[i].ihr_data);
-		}
-	}
-	
-	free(rs->ihrs_records);
-	free(rs);
+        ihex_rs_free(rs);
 }
 
 ihex_recordset_t* mock_recordset(ihex_addr_t base, uint_t count, ihex_rlen_t length)
