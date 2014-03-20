@@ -58,7 +58,8 @@ typedef enum { IHEX_DATA = 0x00, IHEX_EOF = 0x01, IHEX_ESA = 0x02,
                IHEX_SSA = 0x03, IHEX_ELA = 0x04, IHEX_SLA = 0x05 } ihex_rtype_t;
 typedef enum { IHEX_WIDTH_8BIT = 1, IHEX_WIDTH_16BIT = 2,
                IHEX_WIDTH_32BIT = 4, IHEX_WIDTH_64BIT = 8 } ihex_width_t;
-typedef enum { IHEX_ORDER_BIGENDIAN, IHEX_ORDER_LITTLEENDIAN } ihex_byteorder_t;
+typedef enum { IHEX_ORDER_BIGENDIAN, IHEX_ORDER_LITTLEENDIAN,
+	       IHEX_ORDER_NATIVE } ihex_byteorder_t;
 
 typedef uint8_t* ihex_rdata_t;
 typedef uint8_t  ihex_rlen_t;
