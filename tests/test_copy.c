@@ -33,7 +33,7 @@ void test_memory_is_copied_1();
 
 void mock_recordset_free(ihex_recordset_t* rs)
 {
-	uint_t i = 0, j = 0;
+	uint_t i = 0;
 	
 	for (i = 0; i < rs->ihrs_count; i ++)
 	{
