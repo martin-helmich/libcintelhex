@@ -22,18 +22,18 @@
  */
 
 
-void test_can_zero_memory();
-void test_memory_is_zeroed_before_copy();
-void test_memory_is_copied_to_00_address();
-void test_memory_is_copied_to_00_address_32b_bigendian();
-void test_memory_is_copied_to_high_address();
-void test_memory_is_copied_to_32bit_address();
-void test_error_is_set_when_recordset_is_too_large();
-void test_memory_is_copied_1();
+void test_can_zero_memory(void);
+void test_memory_is_zeroed_before_copy(void);
+void test_memory_is_copied_to_00_address(void);
+void test_memory_is_copied_to_00_address_32b_bigendian(void);
+void test_memory_is_copied_to_high_address(void);
+void test_memory_is_copied_to_32bit_address(void);
+void test_error_is_set_when_recordset_is_too_large(void);
+void test_memory_is_copied_1(void);
 
 void mock_recordset_free(ihex_recordset_t* rs)
 {
-	uint_t i = 0, j = 0;
+	uint_t i = 0;
 	
 	for (i = 0; i < rs->ihrs_count; i ++)
 	{
@@ -144,7 +144,7 @@ void add_tests_memcopysuite(CU_pSuite suite)
 	CU_add_test(suite, "General memory copy test #1", test_memory_is_copied_1);
 }
 
-void test_can_zero_memory()
+void test_can_zero_memory(void)
 {
 	uint8_t area[16];
 	uint_t  i;
@@ -165,7 +165,7 @@ void test_can_zero_memory()
 	}
 }
 
-void test_memory_is_zeroed_before_copy()
+void test_memory_is_zeroed_before_copy(void)
 {
 	uint8_t area[16];
 	uint_t  i;
@@ -189,7 +189,7 @@ void test_memory_is_zeroed_before_copy()
 	}
 }
 
-void test_memory_is_copied_to_00_address()
+void test_memory_is_copied_to_00_address(void)
 {
 	uint8_t area[16];
 	uint_t  i;
@@ -213,7 +213,7 @@ void test_memory_is_copied_to_00_address()
 	}
 }
 
-void test_memory_is_copied_to_00_address_32b_bigendian()
+void test_memory_is_copied_to_00_address_32b_bigendian(void)
 {
 	uint32_t area[16];
 	uint_t   i;
@@ -237,7 +237,7 @@ void test_memory_is_copied_to_00_address_32b_bigendian()
 	}
 }
 
-void test_memory_is_copied_to_high_address()
+void test_memory_is_copied_to_high_address(void)
 {
 	uint8_t area[16];
 	uint_t  i;
@@ -261,7 +261,7 @@ void test_memory_is_copied_to_high_address()
 	}
 }
 
-void test_memory_is_copied_to_32bit_address()
+void test_memory_is_copied_to_32bit_address(void)
 {
 	uint8_t* area = (uint8_t*) malloc(262144);
 	uint_t  i;
@@ -287,7 +287,7 @@ void test_memory_is_copied_to_32bit_address()
 	free(area);
 }
 
-void test_error_is_set_when_recordset_is_too_large()
+void test_error_is_set_when_recordset_is_too_large(void)
 {
 	uint8_t area[16];
 	uint_t  i;
@@ -307,7 +307,7 @@ void test_error_is_set_when_recordset_is_too_large()
 	CU_ASSERT_EQUAL(ihex_errno(), IHEX_ERR_ADDRESS_OUT_OF_RANGE);
 }
 
-void test_memory_is_copied_1()
+void test_memory_is_copied_1(void)
 {
 	ihex_recordset_t *rs  = ihex_rs_from_file("tests/res/big-a.hex");
 	uint8_t          *dst = (uint8_t*) malloc(8192);

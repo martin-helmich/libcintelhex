@@ -109,7 +109,7 @@ extern char*        ihex_last_error; //!< Description of last error.
  * 
  *  @param filename The filename of the input file.
  *  @return         A pointer to a newly generated recordset object. */
-ihex_recordset_t* ihex_rs_from_file(char* filename);
+ihex_recordset_t* ihex_rs_from_file(const char* filename);
 
 /// Parse Intel HEX string from string input.
 /** This method parses an Intel HEX string from a string input. This
@@ -118,7 +118,7 @@ ihex_recordset_t* ihex_rs_from_file(char* filename);
  * 
  *  @param data The input string.
  *  @return         A pointer to a newly generated recordset object. */
-ihex_recordset_t* ihex_rs_from_string(char* data);
+ihex_recordset_t* ihex_rs_from_string(const char* data);
 
 /// Gets a record set's size.
 /** This method determines a record set's size. This is done by adding
@@ -132,7 +132,7 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
 /// Return error code, or 0 if no error occurred.
 /** This method returns the error code of the latest error.
  *  @return The error code of the latest error. */
-ihex_error_t ihex_errno();
+ihex_error_t ihex_errno(void);
 
 /// Checks if a record's checksum is valid.
 /** Validate the record by adding up all bytes of a record.
@@ -164,7 +164,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n, ihex_width_t w, ih
 int ihex_mem_zero(void* dst, ulong_t n);
 
 /// Return error string, or NULL if no error occurred.
-char* ihex_error();
+char* ihex_error(void);
 
 /// Parse 8-bit hex input.
 uint8_t ihex_fromhex8(uint8_t *input);

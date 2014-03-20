@@ -24,7 +24,7 @@
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:src/%.c=obj/%.o)
 
-CCFLAGS += -std=c99 -O3 -fPIC -Wall -Iinclude/ -I.
+CFLAGS += -std=c99 -O3 -fPIC -Wall -Iinclude/ -I.
 LDFLAGS += -shared -fPIC
 
 EXECUTABLE = libcintelhex.so
@@ -36,7 +36,7 @@ exec_prefix = @exec_prefix@
 all: prepare release_static release
 
 obj/%.o: src/%.c
-	$(CC) $(CCFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -rf obj bin

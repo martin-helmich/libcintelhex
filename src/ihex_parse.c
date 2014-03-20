@@ -48,7 +48,7 @@
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
-ihex_recordset_t* ihex_rs_from_file(char* filename)
+ihex_recordset_t* ihex_rs_from_file(const char* filename)
 {
 	struct stat s;
 	int         fd;
@@ -119,7 +119,7 @@ ihex_recordset_t* ihex_rs_from_file(char* filename)
 	return NULL;
 }
 
-ihex_recordset_t* ihex_rs_from_string(char* data)
+ihex_recordset_t* ihex_rs_from_string(const char* data)
 {
 	uint_t i = 0;
 	int    r = 0, c = 0;
@@ -131,7 +131,7 @@ ihex_recordset_t* ihex_rs_from_string(char* data)
 	ihex_recordset_t *recls;
 	
 	// Count number of record marks in input string.
-	for (char *p = data; *p != 0x00; p ++)
+	for (const char *p = data; *p != 0x00; p ++)
 	{
 		if (*p == IHEX_CHR_RECORDMARK)
 		{
@@ -216,7 +216,10 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8 (data + 7);
 	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8 (data + 9 + record->ihr_length * 2);
 
-	record->ihr_data     = (ihex_rdata_t) malloc(record->ihr_length);
+	if ((record->ihr_data = (ihex_rdata_t) malloc(record->ihr_length)) == NULL)
+	{
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+	}
 	
 	// Records needs to end with CRLF or LF.
 	if (   (   data[11 + record->ihr_length * 2] != 0x0D
@@ -282,7 +285,7 @@ void ihex_set_error(ihex_error_t errno, char* error)
 	#endif
 }
 
-inline uint8_t ihex_fromhex4(uint8_t i)
+static inline uint8_t ihex_fromhex4(uint8_t i)
 {
 	if      (i >= 0x61 && i <= 0x66) return i - 0x61 + 10;
 	else if (i >= 0x41 && i <= 0x46) return i - 0x41 + 10;
