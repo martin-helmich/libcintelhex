@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <sys/stat.h>
 #ifdef HAVE_SYS_MMAN_H
@@ -91,7 +92,7 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	}
 #endif
 	
-	r = ihex_rs_from_string(c);
+	r = ihex_rs_from_mem(c, l);
 	
 	// No special error treatment necessary, we need to unmap and close
 	// the file anyway.
@@ -119,10 +120,11 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	return NULL;
 }
 
-ihex_recordset_t* ihex_rs_from_string(const char* data)
+ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size)
 {
 	uint_t i = 0;
 	int    r = 0, c = 0;
+	const char *end = data + size;
 	
 	ihex_last_errno = 0;
 	ihex_last_error = NULL;
@@ -131,7 +133,7 @@ ihex_recordset_t* ihex_rs_from_string(const char* data)
 	ihex_recordset_t *recls;
 	
 	// Count number of record marks in input string.
-	for (const char *p = data; *p != 0x00; p ++)
+	for (const char *p = data; p < end && *p != 0x00; p ++)
 	{
 		if (*p == IHEX_CHR_RECORDMARK)
 		{
@@ -156,19 +158,21 @@ ihex_recordset_t* ihex_rs_from_string(const char* data)
 	recls->ihrs_count   = c;
 	recls->ihrs_records = rec;
 	
-	while (*(data) != 0x00)
+	while (data < end && *(data) != 0x00)
 	{
 		i ++;
 		
+		if (data + 3 >= end) break;
 		ihex_rlen_t l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
-		if ((r = ihex_parse_single_record((ihex_rdata_t) data, l, rec + i - 1)) != 0)
+		if (data + 9 + l * 2 >= end ||
+		    (r = ihex_parse_single_record((ihex_rdata_t) data, l, rec + i - 1)) != 0)
 		{
 			IHEX_SET_ERROR(r, "Line %i: %s", i, ihex_last_error);
 			goto parse_single_failed;
 		}
 		
 		data += (rec[i - 1].ihr_length * 2) + 10;
-		while (*(data) != IHEX_CHR_RECORDMARK && *(data) != 0x00)
+		while (data < end && *(data) != IHEX_CHR_RECORDMARK && *(data) != 0x00)
 		{
 			data ++;
 		}
@@ -196,6 +200,11 @@ ihex_recordset_t* ihex_rs_from_string(const char* data)
 	return NULL;
 }
 
+ihex_recordset_t* ihex_rs_from_string(const char* data)
+{
+	return ihex_rs_from_mem(data, strlen(data));
+}
+
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record)
 {
 	uint_t i;
@@ -211,7 +220,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	// 0 12 3456 78 90123456789012345678901234567890 12
 	// : 10 0100 00 214601360121470136007EFE09D21901 40
 	
-	record->ihr_length   = (ihex_rlen_t)  ihex_fromhex8 (data + 1);
+	record->ihr_length   = (ihex_rlen_t)  length;
 	record->ihr_address  = (ihex_addr_t)  ihex_fromhex16(data + 3);
 	record->ihr_type     = (ihex_rtype_t) ihex_fromhex8 (data + 7);
 	record->ihr_checksum = (ihex_rchks_t) ihex_fromhex8 (data + 9 + record->ihr_length * 2);
