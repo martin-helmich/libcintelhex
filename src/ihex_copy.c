@@ -63,7 +63,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 		if (address >= n)
 		{
 			IHEX_SET_ERROR_RETURN(IHEX_ERR_ADDRESS_OUT_OF_RANGE,
-				"Address 0x%08x is out of range.", address);
+				"Address 0x%08x is out of range", address);
 		}
 		
 		switch (x->ihr_type)
@@ -89,7 +89,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 				if (i < rs->ihrs_count - 1)
 				{
 					IHEX_SET_ERROR_RETURN(IHEX_ERR_PREMATURE_EOF,
-						"Premature EOF in record %i.", i + 1);
+						"Premature EOF in record %i", i + 1);
 				}
 				else
 				{
@@ -115,7 +115,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 				break;
 			default:
 				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
-					"Unknown record type in record %i: 0x%02x.",
+					"Unknown record type in record %i: 0x%02x",
 					i+1, x->ihr_type);
 		}
 	}
