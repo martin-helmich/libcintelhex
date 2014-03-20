@@ -285,7 +285,7 @@ void ihex_set_error(ihex_error_t errno, char* error)
 	#endif
 }
 
-inline uint8_t ihex_fromhex4(uint8_t i)
+static inline uint8_t ihex_fromhex4(uint8_t i)
 {
 	if      (i >= 0x61 && i <= 0x66) return i - 0x61 + 10;
 	else if (i >= 0x41 && i <= 0x46) return i - 0x41 + 10;
