@@ -61,13 +61,13 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist.", filename);
+		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist", filename);
 		goto open_failed;
 	}
 	
 	if (fstat (fd, &s) != 0)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s.", filename);
+		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s", filename);
 		goto stat_failed;
 	}
 	
@@ -75,19 +75,19 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 #ifdef HAVE_MMAP
 	if ((c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0)) == (void*) -1)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_MMAP_FAILED, "Could not map file %s.", filename);
+		IHEX_SET_ERROR(IHEX_ERR_MMAP_FAILED, "Could not map file %s", filename);
 		goto mmap_failed;
 	}
 #else
 	if ((c = (char*) malloc(l)) == NULL)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not allocate memory for reading file %s.", filename);
+		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not allocate memory for reading file %s", filename);
 		goto malloc_failed;
 	}
 
 	if (read(fd, c, l) != l)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s.", filename);
+		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
 		goto read_failed;
 	}
 #endif
@@ -145,13 +145,13 @@ ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size)
 	// individual record.
 	if ((rec = (ihex_record_t*) calloc(c, sizeof(ihex_record_t))) == NULL)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory");
 		goto malloc_rec_failed;
 	}
 
 	if ((recls = (ihex_recordset_t*) malloc(sizeof(ihex_recordset_t))) == NULL)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+		IHEX_SET_ERROR(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory");
 		goto malloc_recls_failed;
 	}
 	
@@ -180,7 +180,7 @@ ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size)
 	
 	if (recls->ihrs_records[recls->ihrs_count - 1].ihr_type != IHEX_EOF)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_NO_EOF, "Missing EOF record.");
+		IHEX_SET_ERROR(IHEX_ERR_NO_EOF, "Missing EOF record");
 		goto missing_eof_record;
 	}
 	
@@ -212,7 +212,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	// Records needs to begin with record mark (usually ":")
 	if (*(data) != IHEX_CHR_RECORDMARK)
 	{
-		IHEX_SET_ERROR_RETURN(IHEX_ERR_PARSE_ERROR, "Missing record mark.");
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_PARSE_ERROR, "Missing record mark");
 	}
 	
 	// Record layout:
@@ -227,7 +227,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 
 	if ((record->ihr_data = (ihex_rdata_t) malloc(record->ihr_length)) == NULL)
 	{
-		IHEX_SET_ERROR_RETURN(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory.");
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_MALLOC_FAILED, "Could not allocate memory");
 	}
 	
 	// Records needs to end with CRLF or LF.
@@ -236,7 +236,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	    && (data[11 + record->ihr_length * 2] != 0x0A))
 	{
 		free(record->ihr_data);
-		IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Incorrect record length.");
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Incorrect record length");
 	}
 	
 	for (i = 0; i < record->ihr_length; i ++)
@@ -244,7 +244,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 		if (data[9 + i*2] == 0x0A || data[9 + i*2] == 0x0D)
 		{
 			free(record->ihr_data);
-			IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Unexpected end of line.");
+			IHEX_SET_ERROR_RETURN(IHEX_ERR_WRONG_RECORD_LENGTH, "Unexpected end of line");
 		}
 		record->ihr_data[i] = ihex_fromhex8(data + 9 + i*2);
 	}
@@ -252,7 +252,7 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 	if (ihex_check_record(record) != 0)
 	{
 		free(record->ihr_data);
-		IHEX_SET_ERROR_RETURN(IHEX_ERR_INCORRECT_CHECKSUM, "Checksum validation failed.");
+		IHEX_SET_ERROR_RETURN(IHEX_ERR_INCORRECT_CHECKSUM, "Checksum validation failed");
 	}
 	
 	return 0;
