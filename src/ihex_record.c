@@ -74,7 +74,7 @@ int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max
 		switch (x->ihr_type)
 		{
 			case IHEX_DATA:
-				if (address + x->ihr_length > *max) *max = address;
+				if (address + x->ihr_length > *max) *max = address + x->ihr_length;
 				break;
 			case IHEX_EOF:
 				if (i < rs->ihrs_count - 1)
