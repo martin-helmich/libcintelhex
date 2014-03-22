@@ -140,6 +140,23 @@ ihex_recordset_t* ihex_rs_from_string(const char* data);
  *  @return   The record set's size. */
 ulong_t ihex_rs_get_size(ihex_recordset_t* rs);
 
+/// Finds the address range which is contained in a record set.
+/** This method determines a record set's size with regard to address
+ *  offsets and record lengths.  The boundaries specify a memory
+ *  region large enough to hold all contained data, for example:
+ * 
+ *  @code
+ *    uint32_t min, max;
+ *    ihex_rs_get_address_range(rs, &min, &max);
+ *    void *data = malloc(max - min);
+ *  @endcode
+ * 
+ *  @param rs  A pointer to the record set.
+ *  @param min [out] Lowest address contained.
+ *  @param max [out] Upper address boundary (just past highest address).
+ *  @return    0 on success, an error code otherwise. */
+int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max);
+
 /// Frees resources associated with a record set.
 /** This method frees all memory allocated in one of the
  *  ihex_rs_from_*() functions.  Passing NULL as input is allowed and
