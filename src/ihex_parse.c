@@ -85,10 +85,17 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 		goto malloc_failed;
 	}
 
-	if (read(fd, c, l) != l)
+	ulong_t rest = l;
+	while (rest > 0)
 	{
-		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
-		goto read_failed;
+		ssize_t bytes = read(fd, c + (l - rest), rest);
+		if (bytes < 0)
+		{
+			IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
+			goto read_failed;
+		}
+		else if (bytes == 0) break;	//end of file
+		rest -= bytes;
 	}
 #endif
 	
