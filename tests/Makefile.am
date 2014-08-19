@@ -1,8 +1,5 @@
 #
-# (C) 2013  Martin Helmich <martin.helmich@hs-osnabrueck.de>
-#           Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
-# 
-#           University of Applied Sciences Osnabrück
+# (C) 2014  Andre Colomb <src@andre.colomb.de>
 # 
 # This file is part of the CIntelHex library (libcintelhex).
 # 
@@ -21,12 +18,13 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-CC = @CC@
-CFLAGS += @CFLAGS@ -I ../include -I ..
-OBJS = test_main.o
+check_PROGRAMS = test
+TESTS = test
 
-all: $(OBJS)
-	$(CC) $(CFLAGS) -o test $(OBJS) ../obj/*.o -lcunit
+# These source files are included in test_main.c, so we have to
+# distribute them although they should rather be in test_SOURCES
+EXTRA_DIST = test_copy.c test_parse.c test_record.c
 
-clean:
-	rm -f $(OBJS) test
+test_CPPFLAGS = -I$(top_srcdir)/include
+test_SOURCES = test_main.c
+test_LDADD = $(top_builddir)/src/libcintelhex.la -lcunit
