@@ -1,0 +1,28 @@
+#
+# (C) 2014  Andre Colomb <src@andre.colomb.de>
+# 
+# This file is part of the CIntelHex library (libcintelhex).
+# 
+# libcintelhex is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+# 
+# libcintelhex is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with libcintelhex.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+AM_CPPFLAGS = -D_POSIX
+AM_CFLAGS = -Wall -fPIC
+AM_LDFLAGS = -shared -fPIC
+
+lib_LTLIBRARIES = libcintelhex.la
+
+libcintelhex_la_SOURCES = ihex_copy.c ihex_parse.c ihex_record.c
+libcintelhex_la_CPPFLAGS = -I$(top_srcdir)/include
