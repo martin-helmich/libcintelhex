@@ -24,8 +24,9 @@
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:src/%.c=obj/%.o)
 
-CFLAGS += -std=c99 -O3 -fPIC -Wall -Iinclude/ -I.
-LDFLAGS += -shared -fPIC
+CC = @CC@
+CFLAGS += @CFLAGS@ -O3 -fPIC -Wall -Iinclude/ -I.
+LDFLAGS += @LDFLAGS@ -shared -fPIC
 
 EXECUTABLE = libcintelhex.so
 STATICLIB  = libcintelhex.a
