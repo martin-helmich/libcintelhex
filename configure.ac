@@ -26,11 +26,11 @@
 
 AC_PREREQ([2.67])
 AC_INIT([libcintelhex], [1.0], [martin.helmich@hs-osnabrueck.de])
+AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/ihex_parse.c])
-AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CC_C99
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 
@@ -42,6 +42,8 @@ AC_CHECK_HEADERS([CUnit/Basic.h CUnit/CUCurses.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
@@ -51,5 +53,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_CHECK_FUNCS([munmap memset])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile
+                 tests/Makefile])
 AC_OUTPUT

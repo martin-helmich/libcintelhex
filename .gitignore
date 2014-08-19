@@ -7,5 +7,6 @@ Makefile
 bin
 obj
 config.h
+config.h.in
 *~
 configure

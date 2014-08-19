@@ -42,13 +42,13 @@ libcintelhex has no requirements besides a halfway recent GCC and a C standard
 library. Compilation on Windows with MinGW has also reported to be successful,
 building with Clang is still problematic, though.
 
-When cloning from Git, you will also need autoconf to generate the configure script.
+When cloning from Git, you will also need autoreconf to generate the configure script.
 
 ### Compilation
 
 Installation as usual:
 
-    autoconf
+    autoreconf
 	./configure
 	make
 	make install
