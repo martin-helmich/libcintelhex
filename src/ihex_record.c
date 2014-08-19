@@ -24,6 +24,20 @@
 
 #include "cintelhex.h"
 
+#include <stdio.h>
+
+
+#define IHEX_SET_ERROR(errno, error, ...) \
+	{ char *e = malloc(512); \
+	  snprintf(e, 512, error, ##__VA_ARGS__); \
+	  ihex_set_error(errno, e);}
+#define IHEX_SET_ERROR_RETURN(errno, error, ...) \
+	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
+	  return errno;}
+
+
+void ihex_set_error(ihex_error_t errno, char* error);
+
 ulong_t ihex_rs_get_size(ihex_recordset_t* rs)
 {
 	ulong_t s = 0;
@@ -35,6 +49,69 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs)
 	}
 	
 	return s;
+}
+
+int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max)
+{
+	uint_t   i;
+	uint32_t offset = 0x00, address = 0x00, dummy_min, dummy_max;
+	
+	ihex_record_t *x;
+	
+	// Initialize range boundaries
+	if (min == NULL) min = &dummy_min;
+	if (max == NULL) max = &dummy_max;
+	*min = UINT32_MAX;
+	*max = 0x00;
+	
+	for (i = 0; i < rs->ihrs_count; i ++)
+	{
+		x       = (rs->ihrs_records + i);
+		address = (offset + x->ihr_address);
+		
+		if (address < *min) *min = address;
+		
+		switch (x->ihr_type)
+		{
+			case IHEX_DATA:
+				if (address + x->ihr_length > *max) *max = address + x->ihr_length;
+				break;
+			case IHEX_EOF:
+				if (i < rs->ihrs_count - 1)
+				{
+					IHEX_SET_ERROR_RETURN(IHEX_ERR_PREMATURE_EOF,
+						"Premature EOF in record %i", i + 1);
+				}
+				else
+				{
+					return 0;
+				}
+			case IHEX_ESA:
+				offset = *(x->ihr_data) << 4;
+				
+				#ifdef IHEX_DEBUG
+				printf("Switched offset to 0x%08x.\n", offset);
+				#endif
+				
+				break;
+			case IHEX_ELA:
+				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
+				
+				#ifdef IHEX_DEBUG
+				printf("Switched offset to 0x%08x.\n", offset);
+				#endif
+				
+				break;
+			case IHEX_SSA:
+				break;
+			default:
+				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
+					"Unknown record type in record %i: 0x%02x",
+					i+1, x->ihr_type);
+		}
+	}
+	
+	return 0;
 }
 
 void ihex_rs_free(ihex_recordset_t* rs)
