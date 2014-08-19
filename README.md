@@ -6,7 +6,7 @@ cIntelHex - A C library for parsing Intel HEX files
 Authors
 -------
 
-Martin Helmich <martin.helmich@hs-osnabrueck.de>  
+Martin Helmich <martin.helmich@hs-osnabrueck.de>
 Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
 
 University of Applied Sciences Osnabrück
@@ -42,7 +42,7 @@ libcintelhex has no requirements besides a halfway recent GCC and a C standard
 library. Compilation on Windows with MinGW has also reported to be successful,
 building with Clang is still problematic, though.
 
-When cloning from Git, you will also need autoreconf to generate the configure script.
+When cloning from Git, you will also need autoreconf to generate the build system.
 
 ### Compilation
 
@@ -64,7 +64,7 @@ This library can parse Intel HEX data either from an input file or directly
 from a given string:
 
     ihex_records_t* r1 = ihex_rs_from_file("my_filename");
-    
+
     char* input = ":1a01000021A4B2Fe...";
     ihex_records_t* r2 = ihex_rs_from_string(input);
 
