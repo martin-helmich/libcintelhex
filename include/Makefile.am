@@ -18,6 +18,4 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-ACLOCAL_AMFLAGS = -I m4
-
-SUBDIRS = src include
+include_HEADERS = cintelhex.h
