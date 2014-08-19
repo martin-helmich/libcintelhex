@@ -28,7 +28,6 @@ AC_PREREQ([2.67])
 AC_INIT([libcintelhex], [1.0], [martin.helmich@hs-osnabrueck.de])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/ihex_parse.c])
-AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC_C99
@@ -54,6 +53,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_CHECK_FUNCS([munmap memset])
 
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile
                  tests/Makefile])
 AC_OUTPUT
