@@ -48,7 +48,7 @@ When cloning from Git, you will also need autoreconf to generate the configure s
 
 Installation as usual:
 
-    autoreconf
+    autoreconf -i
 	./configure
 	make
 	make install
