@@ -21,7 +21,8 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-CFLAGS += -I ../include -I ..
+CC = @CC@
+CFLAGS += @CFLAGS@ -I ../include -I ..
 OBJS = test_main.o
 
 all: $(OBJS)
