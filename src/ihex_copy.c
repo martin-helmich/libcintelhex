@@ -44,7 +44,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
                   ihex_width_t w, ihex_byteorder_t o)
 {
 	int      r;
-	uint_t   i, j, l;
+	uint_t   i = 0, j, l;
 	uint32_t offset = 0x00, address = 0x00;
 	
 	ihex_rdata_t   d = (ihex_rdata_t) dst;
@@ -55,9 +55,11 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 		return r;
 	}
 	
-	for (i = 0; i < rs->ihrs_count; i ++)
-	{
-		x       = (rs->ihrs_records + i);
+	do {
+		r = ihex_rs_iterate_data(rs, &i, &x, &offset);
+		if (r) return r;
+		else if (x == 0) break;
+
 		address = (offset + x->ihr_address);
 		
 		if (address >= n)
@@ -66,59 +68,22 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 				"Address 0x%08x is out of range", address);
 		}
 		
-		switch (x->ihr_type)
+		for (j = 0; j < x->ihr_length; j += w)
 		{
-			case IHEX_DATA:
-				for (j = 0; j < x->ihr_length; j += w)
-				{
-					uint32_t  v      = 0;
-					uint32_t *target = (uint32_t*) (d + address + j);
-					
-					for (l = 0; (l < w) && (j + l < x->ihr_length); l ++)
-					{
-						v += x->ihr_data[j+l] << (8 * ((o == IHEX_ORDER_BIGENDIAN) ? ((w - 1) - l) : l));
-					}
-					*(target) = v;
-					
-					#ifdef IHEX_DEBUG
-					printf("%08x -> %08x = %08x\n", address + j, v, *target);
-					#endif
-				}
-				break;
-			case IHEX_EOF:
-				if (i < rs->ihrs_count - 1)
-				{
-					IHEX_SET_ERROR_RETURN(IHEX_ERR_PREMATURE_EOF,
-						"Premature EOF in record %i", i + 1);
-				}
-				else
-				{
-					return 0;
-				}
-			case IHEX_ESA:
-				offset = *(x->ihr_data) << 4;
-				
-				#ifdef IHEX_DEBUG
-				printf("Switched offset to 0x%08x.\n", offset);
-				#endif
-				
-				break;
-			case IHEX_ELA:
-				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
-				
-				#ifdef IHEX_DEBUG
-				printf("Switched offset to 0x%08x.\n", offset);
-				#endif
-				
-				break;
-			case IHEX_SSA:
-				break;
-			default:
-				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
-					"Unknown record type in record %i: 0x%02x",
-					i+1, x->ihr_type);
+			uint32_t  v      = 0;
+			uint32_t *target = (uint32_t*) (d + address + j);
+			
+			for (l = 0; (l < w) && (j + l < x->ihr_length); l ++)
+			{
+				v += x->ihr_data[j+l] << (8 * ((o == IHEX_ORDER_BIGENDIAN) ? ((w - 1) - l) : l));
+			}
+			*(target) = v;
+			
+			#ifdef IHEX_DEBUG
+			printf("%08x -> %08x = %08x\n", address + j, v, *target);
+			#endif
 		}
-	}
+	} while (i > 0);
 	
 	return 0;
 }
