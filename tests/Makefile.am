@@ -18,6 +18,8 @@
 # <http://www.gnu.org/licenses/>.
 #
 
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
 check_PROGRAMS = test
 TESTS = test
 
@@ -25,6 +27,5 @@ TESTS = test
 # distribute them although they should rather be in test_SOURCES
 EXTRA_DIST = test_copy.c test_parse.c test_record.c
 
-test_CPPFLAGS = -I$(top_srcdir)/include
 test_SOURCES = test_main.c
 test_LDADD = $(top_builddir)/src/libcintelhex.la -lcunit
