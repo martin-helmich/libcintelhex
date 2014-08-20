@@ -7,4 +7,4 @@ matrix:
     - compiler: clang
 install: sudo apt-get update && sudo apt-get install libcunit1-dev
 before_script: autoreconf --install
-script: ./configure && make && make test
+script: ./configure && make && make check
