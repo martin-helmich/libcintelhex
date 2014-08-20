@@ -30,13 +30,14 @@ AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/ihex_parse.c])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
-AC_PROG_CC_C99
-AM_PROG_AR
-LT_INIT
 
 # Checks for programs.
+AC_PROG_CC
+AC_PROG_CC_C99
+AM_PROG_AR
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
+LT_INIT
 
 # Checks for libraries.
 
