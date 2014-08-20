@@ -19,8 +19,7 @@
 #
 
 AM_CPPFLAGS = -D_POSIX
-AM_CFLAGS = -Wall -fPIC
-AM_LDFLAGS = -shared -fPIC
+AM_CFLAGS = -Wall
 
 lib_LTLIBRARIES = libcintelhex.la
 
