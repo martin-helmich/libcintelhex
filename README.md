@@ -11,6 +11,8 @@ Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
 
 University of Applied Sciences Osnabrück
 
+André Colomb <src@andre.colomb.de>
+
 License
 -------
 
