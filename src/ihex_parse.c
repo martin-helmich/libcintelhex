@@ -41,11 +41,12 @@
 #define IHEX_SET_ERROR(errno, error, ...) \
 	{ char *e = malloc(512); \
 	  snprintf(e, 512, error, ##__VA_ARGS__); \
-	  ihex_last_errno = errno; \
-	  ihex_last_error = e; }
+	  ihex_set_error(errno, e);}
 #define IHEX_SET_ERROR_RETURN(errno, error, ...) \
 	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
 	  return errno; }
+
+void ihex_set_error(ihex_error_t errno, char* error);
 
 static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex_record_t* record);
 
