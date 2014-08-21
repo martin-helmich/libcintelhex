@@ -72,6 +72,7 @@ int main(int argc, char* argv[])
 	CU_basic_run_tests();
 	#endif
 	
+	unsigned int fail = CU_get_number_of_tests_failed();
 	CU_cleanup_registry();
-	return CU_get_error();
+	return fail;
 }
