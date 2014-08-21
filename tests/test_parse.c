@@ -95,7 +95,7 @@ void test_can_parse_address_1(void)
 
 void test_can_read_ihex_rs_from_file_1(void)
 {
-	ihex_recordset_t* r = ihex_rs_from_file("tests/res/hex1.dat");
+	ihex_recordset_t* r = ihex_rs_from_file("res/hex1.dat");
 	
 	CU_ASSERT_PTR_NOT_NULL_FATAL(r);
 	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 6);
@@ -105,7 +105,7 @@ void test_can_read_ihex_rs_from_file_1(void)
 
 void test_can_read_ihex_rs_from_file_2(void)
 {
-	ihex_recordset_t* r = ihex_rs_from_file("tests/res/big-a.hex");
+	ihex_recordset_t* r = ihex_rs_from_file("res/big-a.hex");
 	
 	CU_ASSERT_PTR_NOT_NULL_FATAL(r);
 	CU_ASSERT_EQUAL_FATAL(r->ihrs_count, 214);

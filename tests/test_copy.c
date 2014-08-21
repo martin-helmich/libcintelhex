@@ -311,12 +311,12 @@ void test_error_is_set_when_recordset_is_too_large(void)
 
 void test_memory_is_copied_1(void)
 {
-	ihex_recordset_t *rs  = ihex_rs_from_file("tests/res/big-a.hex");
+	ihex_recordset_t *rs  = ihex_rs_from_file("res/big-a.hex");
 	uint8_t          *dst = (uint8_t*) malloc(8192);
 
 	if (rs == NULL)
 	{
-		CU_FAIL("File \"tests/res/big-a.hex\" does not exist.");
+		CU_FAIL("File \"res/big-a.hex\" does not exist.");
 		return;
 	}
 	
