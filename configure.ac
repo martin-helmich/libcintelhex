@@ -63,4 +63,7 @@ AC_CONFIG_FILES([Makefile
                  include/Makefile
                  src/Makefile
                  tests/Makefile])
+# Make the resource files for the test suite available in the build tree
+AC_CONFIG_LINKS([tests/res/big-a.hex:tests/res/big-a.hex
+                 tests/res/hex1.dat:tests/res/hex1.dat])
 AC_OUTPUT
