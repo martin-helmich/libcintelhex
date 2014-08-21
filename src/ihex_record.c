@@ -27,16 +27,16 @@
 #include <stdio.h>
 
 
-#define IHEX_SET_ERROR(errno, error, ...) \
+#define IHEX_SET_ERROR(errnum, error, ...) \
 	{ char *e = malloc(512); \
 	  snprintf(e, 512, error, ##__VA_ARGS__); \
-	  ihex_set_error(errno, e);}
-#define IHEX_SET_ERROR_RETURN(errno, error, ...) \
-	{ IHEX_SET_ERROR(errno, error, ##__VA_ARGS__); \
-	  return errno;}
+	  ihex_set_error(errnum, e); }
+#define IHEX_SET_ERROR_RETURN(errnum, error, ...) \
+	{ IHEX_SET_ERROR(errnum, error, ##__VA_ARGS__); \
+	  return errnum; }
 
 
-void ihex_set_error(ihex_error_t errno, char* error);
+void ihex_set_error(ihex_error_t errnum, char* error);
 
 ulong_t ihex_rs_get_size(ihex_recordset_t* rs)
 {
