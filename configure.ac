@@ -28,11 +28,16 @@ AC_PREREQ([2.67])
 AC_INIT([libcintelhex], [1.0], [martin.helmich@hs-osnabrueck.de])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/ihex_parse.c])
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
 # Checks for programs.
+AC_PROG_CC
 AC_PROG_CC_C99
+AM_PROG_AR
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
+LT_INIT
 
 # Checks for libraries.
 
@@ -55,5 +60,10 @@ AC_CHECK_FUNCS([munmap memset])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile
+                 include/Makefile
+                 src/Makefile
                  tests/Makefile])
+# Make the resource files for the test suite available in the build tree
+AC_CONFIG_LINKS([tests/res/big-a.hex:tests/res/big-a.hex
+                 tests/res/hex1.dat:tests/res/hex1.dat])
 AC_OUTPUT

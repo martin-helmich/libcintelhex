@@ -1,8 +1,5 @@
 #
-# (C) 2013  Martin Helmich <martin.helmich@hs-osnabrueck.de>
-#           Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
-# 
-#           University of Applied Sciences Osnabrück
+# (C) 2014  Andre Colomb <src@andre.colomb.de>
 # 
 # This file is part of the CIntelHex library (libcintelhex).
 # 
@@ -21,12 +18,6 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-CC = @CC@
-CFLAGS += @CFLAGS@ -I ../include -I ..
-OBJS = test_main.o
+ACLOCAL_AMFLAGS = -I m4
 
-all: $(OBJS)
-	$(CC) $(CFLAGS) -o test $(OBJS) ../obj/*.o -lcunit
-
-clean:
-	rm -f $(OBJS) test
+SUBDIRS = src include tests

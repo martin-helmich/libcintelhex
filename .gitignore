@@ -1,12 +1,30 @@
-Makefile
-*.cache
-*.log
-*.status
-*.scan
-*.o
-bin
-obj
-config.h
-config.h.in
+# backup files
 *~
-configure
+
+# auxiliary scripts
+/compile
+/missing
+/install-sh
+/depcomp
+/ar-lib
+/libtool
+/ltmain.sh
+/test-driver
+
+# autotools generated files
+/aclocal.m4
+*.in
+/configure
+
+# configuration output
+/stamp-*
+/config.*
+/*.cache
+Makefile
+
+# Compilation output
+*.o
+*.Po
+*.a
+*.la
+*.lo
