@@ -28,4 +28,5 @@ TESTS = test
 EXTRA_DIST = test_copy.c test_parse.c test_record.c
 
 test_SOURCES = test_main.c
+EXTRA_test_DEPENDENCIES = res/big-a.hex res/hex1.dat
 test_LDADD = $(top_builddir)/src/libcintelhex.la -lcunit
