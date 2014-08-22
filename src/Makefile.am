@@ -18,7 +18,6 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-AM_CPPFLAGS = -D_POSIX
 AM_CFLAGS = -Wall
 
 lib_LTLIBRARIES = libcintelhex.la
