@@ -46,6 +46,11 @@
 	{ IHEX_SET_ERROR(errnum, error, ##__VA_ARGS__); \
 	  return errnum; }
 
+// Flags for open() syscall
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 
 void ihex_set_error(ihex_error_t errnum, char* error);
 
@@ -60,7 +65,7 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 	
 	ihex_recordset_t* r;
 	
-	fd = open(filename, O_RDONLY);
+	fd = open(filename, O_RDONLY | O_BINARY);
 	if (fd < 0)
 	{
 		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist", filename);
