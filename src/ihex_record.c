@@ -60,12 +60,18 @@ int ihex_rs_iterate_data(ihex_recordset_t* rs, uint_t *i, ihex_record_t **rec, u
 	
 	ihex_record_t *x;
 	
-	if (*i == 0 && off) *off = 0x00;
+	if (*i == 0 && off)
+	{
+		*off = 0x00;
+	}
 	
 	for (; *i < rs->ihrs_count; ++(*i))
 	{
 		x = (rs->ihrs_records + *i);
-		if (rec) *rec = x;	//point the caller to current record
+		if (rec)
+		{
+			*rec = x;	//point the caller to current record
+		}
 		
 		switch (x->ihr_type)
 		{
@@ -83,12 +89,18 @@ int ihex_rs_iterate_data(ihex_recordset_t* rs, uint_t *i, ihex_record_t **rec, u
 				{
 					//FIXME signal end of records
 					*i = 0;
-					if (rec) *rec = 0;
+					if (rec)
+					{
+						*rec = 0;
+					}
 					return 0;
 				}
 			case IHEX_ESA:
 				offset = *(x->ihr_data) << 4;
-				if (off) *off = offset;
+				if (off)
+				{
+					*off = offset;
+				}
 				
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);
@@ -97,7 +109,10 @@ int ihex_rs_iterate_data(ihex_recordset_t* rs, uint_t *i, ihex_record_t **rec, u
 				break;
 			case IHEX_ELA:
 				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
-				if (off) *off = offset;
+				if (off)
+				{
+					*off = offset;
+				}
 				
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);
@@ -127,21 +142,41 @@ int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max
 	ihex_record_t *x;
 	
 	// Initialize range boundaries
-	if (min == NULL) min = &dummy_min;
-	if (max == NULL) max = &dummy_max;
+	if (min == NULL)
+	{
+		min = &dummy_min;
+	}
+	if (max == NULL)
+	{
+		max = &dummy_max;
+	}
+
 	*min = UINT32_MAX;
 	*max = 0x00;
 	
 	do {
 		r = ihex_rs_iterate_data(rs, &i, &x, &offset);
-		if (r) return r;
-		else if (x == 0) break;
+		if (r)
+		{
+			return r;
+		}
+		else if (x == 0)
+		{
+			break;
+		}
 
 		address = (offset + x->ihr_address);
 		
-		if (address < *min) *min = address;
-		if (address + x->ihr_length > *max) *max = address + x->ihr_length;
-	} while (i > 0);
+		if (address < *min)
+		{
+			*min = address;
+		}
+		if (address + x->ihr_length > *max)
+		{
+			*max = address + x->ihr_length;
+		}
+	}
+	while (i > 0);
 
 	return 0;
 }
@@ -150,7 +185,10 @@ void ihex_rs_free(ihex_recordset_t* rs)
 {
 	uint_t i = 0;
 	
-	if (rs == NULL) return;
+	if (rs == NULL)
+	{
+		return;
+	}
 	
 	if (rs->ihrs_records != NULL)
 	{

@@ -55,10 +55,17 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 		return r;
 	}
 	
-	do {
+	do
+	{
 		r = ihex_rs_iterate_data(rs, &i, &x, &offset);
-		if (r) return r;
-		else if (x == 0) break;
+		if (r)
+		{
+			return r;
+		}
+		else if (x == 0)
+		{
+			break;
+		}
 
 		address = (offset + x->ihr_address);
 		
@@ -83,7 +90,8 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n,
 			printf("%08x -> %08x = %08x\n", address + j, v, *target);
 			#endif
 		}
-	} while (i > 0);
+	}
+	while (i > 0);
 	
 	return 0;
 }
