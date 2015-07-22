@@ -6,7 +6,7 @@ cIntelHex - A C library for parsing Intel HEX files
 Authors
 -------
 
-Martin Helmich <martin.helmich@hs-osnabrueck.de>
+Martin Helmich <martin.helmich@hs-osnabrueck.de>  
 Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
 
 University of Applied Sciences Osnabrück
