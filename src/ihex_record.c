@@ -1,8 +1,11 @@
 /*
- * (C) 2013  Martin Helmich <martin.helmich@hs-osnabrueck.de>
+ * (C) 2013, 2014
+ *           Martin Helmich <martin.helmich@hs-osnabrueck.de>
  *           Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
  * 
  *           University of Applied Sciences Osnabrück
+ * 
+ *           Andre Colomb <src@andre.colomb.de>
  * 
  * This file is part of the CIntelHex library (libcintelhex).
  * 
@@ -51,9 +54,74 @@ ulong_t ihex_rs_get_size(ihex_recordset_t* rs)
 	return s;
 }
 
+int ihex_rs_iterate_data(ihex_recordset_t* rs, uint_t *i, ihex_record_t **rec, uint32_t *off)
+{
+	uint32_t offset;
+	
+	ihex_record_t *x;
+	
+	if (*i == 0 && off) *off = 0x00;
+	
+	for (; *i < rs->ihrs_count; ++(*i))
+	{
+		x = (rs->ihrs_records + *i);
+		if (rec) *rec = x;	//point the caller to current record
+		
+		switch (x->ihr_type)
+		{
+			case IHEX_DATA:
+				++(*i);		//proceed to next record in next call
+				return 0;	//let the caller process the data
+
+			case IHEX_EOF:
+				if (*i < rs->ihrs_count - 1)
+				{
+					IHEX_SET_ERROR_RETURN(IHEX_ERR_PREMATURE_EOF,
+						"Premature EOF in record %i", *i + 1);
+				}
+				else
+				{
+					//FIXME signal end of records
+					*i = 0;
+					if (rec) *rec = 0;
+					return 0;
+				}
+			case IHEX_ESA:
+				offset = *(x->ihr_data) << 4;
+				if (off) *off = offset;
+				
+				#ifdef IHEX_DEBUG
+				printf("Switched offset to 0x%08x.\n", offset);
+				#endif
+				
+				break;
+			case IHEX_ELA:
+				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
+				if (off) *off = offset;
+				
+				#ifdef IHEX_DEBUG
+				printf("Switched offset to 0x%08x.\n", offset);
+				#endif
+				
+				break;
+			case IHEX_SSA:
+			case IHEX_SLA:
+				//skip body; next
+				break;
+			default:
+				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
+					"Unknown record type in record %i: 0x%02x",
+					*i+1, x->ihr_type);
+		}
+	}
+
+	IHEX_SET_ERROR_RETURN(IHEX_ERR_NO_EOF, "Missing EOF record");
+}
+
 int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max)
 {
-	uint_t   i;
+	int r;
+	uint_t   i = 0;
 	uint32_t offset = 0x00, address = 0x00, dummy_min, dummy_max;
 	
 	ihex_record_t *x;
@@ -64,53 +132,17 @@ int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max
 	*min = UINT32_MAX;
 	*max = 0x00;
 	
-	for (i = 0; i < rs->ihrs_count; i ++)
-	{
-		x       = (rs->ihrs_records + i);
+	do {
+		r = ihex_rs_iterate_data(rs, &i, &x, &offset);
+		if (r) return r;
+		else if (x == 0) break;
+
 		address = (offset + x->ihr_address);
 		
 		if (address < *min) *min = address;
-		
-		switch (x->ihr_type)
-		{
-			case IHEX_DATA:
-				if (address + x->ihr_length > *max) *max = address + x->ihr_length;
-				break;
-			case IHEX_EOF:
-				if (i < rs->ihrs_count - 1)
-				{
-					IHEX_SET_ERROR_RETURN(IHEX_ERR_PREMATURE_EOF,
-						"Premature EOF in record %i", i + 1);
-				}
-				else
-				{
-					return 0;
-				}
-			case IHEX_ESA:
-				offset = *(x->ihr_data) << 4;
-				
-				#ifdef IHEX_DEBUG
-				printf("Switched offset to 0x%08x.\n", offset);
-				#endif
-				
-				break;
-			case IHEX_ELA:
-				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
-				
-				#ifdef IHEX_DEBUG
-				printf("Switched offset to 0x%08x.\n", offset);
-				#endif
-				
-				break;
-			case IHEX_SSA:
-				break;
-			default:
-				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
-					"Unknown record type in record %i: 0x%02x",
-					i+1, x->ihr_type);
-		}
-	}
-	
+		if (address + x->ihr_length > *max) *max = address + x->ihr_length;
+	} while (i > 0);
+
 	return 0;
 }
 

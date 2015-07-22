@@ -1,8 +1,11 @@
 /*
- * (C) 2013  Martin Helmich <martin.helmich@hs-osnabrueck.de>
+ * (C) 2013, 2014
+ *           Martin Helmich <martin.helmich@hs-osnabrueck.de>
  *           Oliver Erxleben <oliver.erxleben@hs-osnabrueck.de>
  * 
  *           University of Applied Sciences Osnabrück
+ * 
+ *           Andre Colomb <src@andre.colomb.de>
  * 
  * This file is part of the CIntelHex library (libcintelhex).
  * 
@@ -130,6 +133,35 @@ ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size);
  *  @param data The input string (NUL-terminated).
  *  @return         A pointer to a newly generated recordset object. */
 ihex_recordset_t* ihex_rs_from_string(const char* data);
+
+/// Iterate over all records in a record set.
+/** This method should be called repeatedly to process all data
+ *  records in a record set.  A counter variable must be provided to
+ *  track the progress, initially set to zero.  When reaching the end
+ *  of the record set, the counter is reset to zero and NULL is
+ *  returned as the current record.  End-Of-File and address offset
+ *  records are automatically handled, returning the offset address to
+ *  be applied to the current record.  Example:
+ * 
+ *  @code
+ *    uint_t i = 0;
+ *    ihex_record_t *record;
+ *    uint32_t offset;
+ *    int err;
+ *    do {
+ *       err = ihex_rs_iterate_data(rs, &i, &record, &offset);
+ *       if (err || record == 0) break;
+ *       printf("record %u at %lu with length %u\n",
+ *              i, offset + record->ihr_address, record->ihr_length);
+ *    } while (i > 0);
+ *  @endcode
+ *
+ *  @param rs  [in] A pointer to the record set.
+ *  @param i   [in,out] Track the number of the next record to process
+ *  @param rec [out] A pointer to the current record, not updated if NULL is passed
+ *  @param off [out] Offset to apply to the record's address field
+ *  @return    0 on success, an error code otherwise. */
+int ihex_rs_iterate_data(ihex_recordset_t* rs, uint_t *i, ihex_record_t **rec, uint32_t *off);
 
 /// Gets a record set's size.
 /** This method determines a record set's size. This is done by adding

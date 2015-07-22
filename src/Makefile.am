@@ -24,3 +24,4 @@ lib_LTLIBRARIES = libcintelhex.la
 
 libcintelhex_la_SOURCES = ihex_copy.c ihex_parse.c ihex_record.c
 libcintelhex_la_CPPFLAGS = -I$(top_srcdir)/include
+libcintelhex_la_LDFLAGS = -version-info 1:0:1
