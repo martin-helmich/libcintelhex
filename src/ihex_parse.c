@@ -101,7 +101,10 @@ ihex_recordset_t* ihex_rs_from_file(const char* filename)
 			IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
 			goto read_failed;
 		}
-		else if (bytes == 0) break;	//end of file
+		else if (bytes == 0)
+		{
+			break;	//end of file
+		}
 		rest -= bytes;
 	}
 #endif
@@ -176,7 +179,11 @@ ihex_recordset_t* ihex_rs_from_mem(const char* data, size_t size)
 	{
 		i ++;
 		
-		if (data + 3 >= end) break;
+		if (data + 3 >= end)
+		{
+			break;
+		}
+
 		ihex_rlen_t l = ihex_fromhex8(((ihex_rdata_t) data) + 1);
 		if (data + 9 + l * 2 >= end ||
 		    (r = ihex_parse_single_record((ihex_rdata_t) data, l, rec + i - 1)) != 0)
